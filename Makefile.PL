@@ -5,8 +5,7 @@ WriteMakefile(
 	'NAME'			=> 'POE::Component::SSLify',
 	'VERSION_FROM'		=> 'lib/POE/Component/SSLify.pm',
 	'PREREQ_PM'		=>	{
-    	'Net::SSLeay'		=>	'1.17',
-    	'Net::SSLeay::Handle'	=>	'0.61',
+		'Net::SSLeay'		=>	'1.17',
 	},
 	( $] >= 5.005 ?     ## Add these new keywords supported since 5.005
 		('ABSTRACT_FROM'  => 'lib/POE/Component/SSLify.pm',

@@ -7,15 +7,15 @@ use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
 use vars qw( $VERSION );
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 # Import the SSL death routines
 use Net::SSLeay qw( die_now die_if_ssl_error );
 
 # Argh, we actually copy over some stuff
-my %Filenum_Object;    #-- hash of hashes, keyed by fileno()
+our %Filenum_Object;    #-- hash of hashes, keyed by fileno()
 
-# Override TIEHANDLE because now we use the server CTX
+# Ties the socket
 sub TIEHANDLE {
 	my ( $class, $socket, $ctx ) = @_;
 
@@ -31,19 +31,21 @@ sub TIEHANDLE {
 		ssl    => $ssl,
 		ctx    => $ctx,
 		socket => $socket,
-		fileno => $fileno,
 	};
 
-	return bless $socket, $class;
+	return bless \$fileno, $class;
 }
 
-# Override the read stuff
+# Read something from the socket
 sub READ {
-	# Get the pointers to socket, buffer, length, and the offset
-	my( $sock, $buf, $len, $offset ) = \( @_ );
+	# Get ourself!
+	my $self = shift;
+
+	# Get the pointers to buffer, length, and the offset
+	my( $buf, $len, $offset ) = \( @_ );
 
 	# Get the actual ssl handle
-	my $ssl = $Filenum_Object{ fileno( $$sock ) }->{'ssl'};
+	my $ssl = $Filenum_Object{ $$self }->{'ssl'};
 
 	# If we have no offset, replace the buffer with some input
 	if ( ! defined $$offset ) {
@@ -77,10 +79,10 @@ sub READ {
 	return length( $read );
 }
 
-# Override the write stuff
+# Write some stuff to the socket
 sub WRITE {
-	# Get the socket + buffer + length + offset to write
-	my( $sock, $buf, $len, $offset ) = @_;
+	# Get ourself + buffer + length + offset to write
+	my( $self, $buf, $len, $offset ) = @_;
 
 	# If we have nothing to offset, then start from the beginning
 	if ( ! defined $offset ) {
@@ -88,7 +90,7 @@ sub WRITE {
 	}
 
 	# Okay, get the ssl handle
-	my $ssl = $Filenum_Object{ fileno( $sock ) }->{'ssl'};
+	my $ssl = $Filenum_Object{ $$self }->{'ssl'};
 
 	# We count the number of characters written to the socket
 	my $wrote_len = Net::SSLeay::write( $ssl, substr( $buf, $offset, $len ) );
@@ -104,17 +106,28 @@ sub WRITE {
 	}
 }
 
-# Override close because it does CTX_Free, which is bad bad
+# Closes the socket
 sub CLOSE {
-	my $sock = shift;
-	Net::SSLeay::free( $Filenum_Object{ fileno( $sock ) }->{'ssl'} );
-	delete $Filenum_Object{ fileno( $sock ) };
-	close $sock;
+	my $self = shift;
+	Net::SSLeay::free( $Filenum_Object{ $$self }->{'ssl'} );
+	close $Filenum_Object{ $$self }->{'socket'};
+	delete $Filenum_Object{ $$self };
+	return 1;
+}
+
+# Add DESTROY handler
+sub DESTROY {
+	my $self = shift;
+
+	# Did we already CLOSE?
+	if ( exists $Filenum_Object{ $$self } ) {
+		# Guess not...
+		$self->CLOSE();
+	}
 }
 
 sub FILENO {
-	my $sock = shift;
-	return fileno( $sock );
+	return ${ $_[0] };
 }
 
 # Not implemented TIE's
@@ -126,10 +139,9 @@ sub PRINT {
 	die 'Not Implemented';
 }
 
-# Our own convenience functions
-sub _CIPHER {
-	my $sock = shift;
-	return Net::SSLeay::get_cipher( $Filenum_Object{ fileno( $sock ) }->{'ssl'} );
+# Returns our hash
+sub _get_self {
+	return $Filenum_Object{ ${ $_[0] } };
 }
 
 # End of module
@@ -145,6 +157,12 @@ POE::Component::SSLify::ServerHandle
 	See POE::Component::SSLify
 
 =head1 CHANGES
+
+=head2 0.02
+
+	Removed _CIPHER and moved it to the main SSLify.pm code
+	Oops, forgot to override _get_self and _get_ssl
+	Fixed a nasty leak issue
 
 =head2 0.01
 

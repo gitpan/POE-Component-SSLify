@@ -7,11 +7,11 @@ use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
 use vars qw( $VERSION );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 # We need Net::SSLeay or all's a failure!
 BEGIN {
-	eval { require Net::SSLeay::Handle };
+	eval { require Net::SSLeay };
 
 	# Check for errors...
 	if ( $@ ) {
@@ -20,15 +20,18 @@ BEGIN {
 	} else {
 		# Check to make sure the versions are what we want
 		if ( ! (	defined $Net::SSLeay::VERSION and
-				defined $Net::SSLeay::Handle::VERSION and
-				$Net::SSLeay::VERSION >= 1.17 and
-				$Net::SSLeay::Handle::VERSION >= 0.61 ) ) {
+				$Net::SSLeay::VERSION >= 1.17 ) ) {
 			# Argh...
-			die 'Please upgrade Net::SSLeay to 1.17+ or Net::SSLeay::Handle to 0.61+';
+			die 'Please upgrade Net::SSLeay to 1.17+';
 		} else {
 			# Finally, load our subclass :)
 			require POE::Component::SSLify::ClientHandle;
 			require POE::Component::SSLify::ServerHandle;
+
+			# Initialize Net::SSLeay
+			Net::SSLeay::load_error_strings();
+			Net::SSLeay::SSLeay_add_ssl_algorithms();
+			Net::SSLeay::randomize();
 		}
 	}
 }
@@ -37,7 +40,7 @@ BEGIN {
 require Exporter;
 use vars qw( @ISA @EXPORT_OK );
 @ISA = qw( Exporter );
-@EXPORT_OK = qw( Client_SSLify Server_SSLify SSLify_Options SSLify_GetCTX );
+@EXPORT_OK = qw( Client_SSLify Server_SSLify SSLify_Options SSLify_GetCTX SSLify_GetCipher SSLify_GetSocket );
 
 # Bring in some socket-related stuff
 use Symbol qw( gensym );
@@ -144,8 +147,6 @@ sub SSLify_Options {
 	# Get the key + cert
 	my( $key, $cert ) = @_;
 
-	Net::SSLeay::Handle->_initialize();
-
 	$ctx = Net::SSLeay::CTX_new() or die_now( "CTX_new($ctx): $!" );
 	Net::SSLeay::CTX_set_options( $ctx, &Net::SSLeay::OP_ALL ) and die_if_ssl_error( 'ssl ctx set options' );
 
@@ -164,6 +165,18 @@ sub SSLify_Options {
 # Returns the server-side CTX in case somebody wants to play with it
 sub SSLify_GetCTX {
 	return $ctx;
+}
+
+# Gives you the cipher type of a SSLified socket
+sub SSLify_GetCipher {
+	my $sock = shift;
+	return Net::SSLeay::get_cipher( tied( *$sock )->_get_self()->{'ssl'} );
+}
+
+# Gives you the "Real" Socket to play with
+sub SSLify_GetSocket {
+	my $sock = shift;
+	return tied( *$sock )->_get_self()->{'socket'};
 }
 
 # End of module
@@ -238,6 +251,12 @@ POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
 =head1 CHANGES
 
+=head2 0.04
+
+	Added new functions to extract data from the SSL socket -> GetCipher and GetSocket
+	In the case somebody knows Net::SSLeay more than me, added GetCTX to return the server-side CTX object
+	Removed the dependency on Net::SSLeay::Handle
+
 =head2 0.03
 
 	First stab at the server-side code, help me test it out!
@@ -258,6 +277,12 @@ This component represents the standard way to do SSL in POE.
 
 
 =head1 NOTES
+
+=head2 Socket methods doesn't work
+
+The new socket this module gives you actually is some tied socket magic, so you cannot do stuff like
+getpeername() or getsockname(). The only way to do it is to use SSLify_GetSocket and then operate on
+the socket it returns.
 
 =head2 Dying everywhere...
 
@@ -281,8 +306,6 @@ that you check for errors and not use SSL, like so:
 
 =head1 FUNCTIONS
 
-	There's four functions one can use:
-
 =head2 Client_SSLify
 
 	Accepts a socket, returns a brand new socket SSLified
@@ -300,6 +323,20 @@ that you check for errors and not use SSL, like so:
 =head2 SSLify_GetCTX
 
 	Returns the server-side CTX in case you wanted to play around with it :)
+
+=head2 SSLify_GetCipher
+
+	Returns the cipher used by the SSLified socket
+
+	Example:
+		print "SSL Cipher is: " . SSLify_GetCipher( $sslified_sock ) . "\n";
+
+=head2 SSLify_GetSocket
+
+	Returns the actual socket used by the SSLified socket, useful for stuff like getpeername()/getsockname()
+
+	Example:
+		print "Remote IP is: " . ( unpack_sockaddr_in( getpeername( SSLify_GetSocket( $sslified_sock ) ) ) )[0] . "\n";
 
 =head1 EXPORT
 

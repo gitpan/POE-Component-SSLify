@@ -7,78 +7,46 @@ use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
 use vars qw( $VERSION );
-$VERSION = '0.01';
+$VERSION = '0.02';
 
-# We subclass Net::SSLeay
-use Net::SSLeay::Handle;
+# Import the SSL death routines
+use Net::SSLeay qw( die_now die_if_ssl_error );
+
+# We inherit from ServerHandle
 use vars qw( @ISA );
-@ISA = qw( Net::SSLeay::Handle );
+@ISA = qw( POE::Component::SSLify::ServerHandle );
 
-# Override the read stuff
-sub READ {
-	# Get the pointers to socket, buffer, length, and the offset
-	my( $sock, $buf, $len, $offset ) = \( @_ );
+# Override TIEHANDLE because we create a CTX
+sub TIEHANDLE {
+	my ( $class, $socket ) = @_;
 
-	# Get the actual ssl handle
-	my $ssl = $$sock->_get_ssl();
+	my $ctx = Net::SSLeay::CTX_new() or die_now( "Failed to create SSL_CTX $!" );
+	my $ssl = Net::SSLeay::new( $ctx ) or die_now( "Failed to create SSL $!" );
 
-	# If we have no offset, replace the buffer with some input
-	if ( ! defined $$offset ) {
-		$$buf = Net::SSLeay::read( $ssl, $$len );
+	my $fileno = fileno( $socket );
 
-		# Are we done?
-		if ( defined $$buf ) {
-			return length( $$buf );
-		} else {
-			# Nah, clear the buffer too...
-			$$buf = "";
-			return;
-		}
-	}
+	Net::SSLeay::set_fd( $ssl, $fileno );   # Must use fileno
 
-	# Now, actually read the data
-	defined( my $read = Net::SSLeay::read( $ssl, $$len ) ) or return undef;
+	my $resp = Net::SSLeay::connect( $ssl ) or die_if_ssl_error( 'ssl connect' );
 
-	# Figure out the buffer and offset
-	my $buf_len = length( $$buf );
+	$POE::Component::SSLify::ServerHandle::Filenum_Object{ $fileno } = {
+		ssl    => $ssl, 
+		ctx    => $ctx,
+		socket => $socket,
+	};
 
-	# If our offset is bigger, pad the buffer
-	if ( $$offset > $buf_len ) {
-		$$buf .= chr( 0 ) x ( $$offset - $buf_len );
-	}
-
-	# Insert what we just read into the buffer
-	substr( $$buf, $$offset ) = $read;
-
-	# All done!
-	return length( $read );
+	return bless \$fileno, $class;
 }
 
-# Override the write stuff
-sub WRITE {
-	# Get the socket + buffer + length + offset to write
-	my( $sock, $buf, $len, $offset ) = @_;
-
-	# If we have nothing to offset, then start from the beginning
-	if ( ! defined $offset ) {
-		$offset = 0;
-	}
-
-	# Okay, get the ssl handle
-	my $ssl = $sock->_get_ssl();
-
-	# We count the number of characters written to the socket
-	my $wrote_len = Net::SSLeay::write( $ssl, substr( $buf, $offset, $len ) );
-
-	# Did we get an error or number of bytes written?
-	# Net::SSLeay::write() returns the number of bytes written, or -1 on error.
-	if ( $wrote_len < 0 ) {
-		# The normal syswrite() POE uses expects 0 here.
-		return 0;
-	} else {
-		# All done!
-		return $wrote_len;
-	}
+# Override close because it does not do CTX_Free, which is bad bad
+sub CLOSE {
+	my $self = shift;
+	my $info = $self->_get_self();
+	Net::SSLeay::free( $info->{'ssl'} );
+	Net::SSLeay::CTX_free( $info->{'ctx'} );
+	close $info->{'socket'};
+	delete $POE::Component::SSLify::ServerHandle::Filenum_Object{ $$self };
+	return 1;
 }
 
 # End of module
@@ -98,6 +66,7 @@ POE::Component::SSLify::ClientHandle
 =head2 0.02
 
 	Renamed to ClientHandle
+	Now inherits from ServerHandle
 
 =head2 0.01
 
