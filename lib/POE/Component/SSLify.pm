@@ -7,7 +7,7 @@ use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
 use vars qw( $VERSION );
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 # We need Net::SSLeay or all's a failure!
 BEGIN {
@@ -58,7 +58,7 @@ sub SSLify {
 	# a socket blocking, so we use IO::Handle's blocking(1) method.
 	# Perl 5.005_03 doesn't like blocking(), so we only use it in
 	# 5.8.0 and beyond.
-	if ( $] >= 5.008 ) {
+	if ( $] >= 5.008 and $^O eq 'MSWin32' ) {
 		# From IO::Handle POD
 		# If an error occurs blocking will return undef and $! will be set.
 		if ( ! $socket->blocking( 1 ) ) {
@@ -130,6 +130,10 @@ POE::Component::SSLify - Makes using SSL in the world of POE easy!
 	Makes SSL use in POE a breeze!
 
 =head1 CHANGES
+
+=head2 0.02
+
+	Made sure the IO::Handle way was used only on MSWin32
 
 =head2 0.01
 
