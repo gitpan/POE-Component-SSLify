@@ -1,0 +1,6 @@
+Revision history for Perl extension POE::Component::SSLify.
+
+0.01  Tue Aug 10 00:59:52 2004
+	- original version; created by h2xs 1.23 with options
+		-AXn POE::Component::SSLify --use-new-tests --skip-ppport --skip-autoloader
+

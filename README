@@ -1,0 +1,27 @@
+POE-Component-SSLify version 0.01
+=================================
+
+This module makes Net::SSLeay's SSL sockets behave with POE :)
+
+INSTALLATION
+
+To install this module type the following:
+
+	perl Makefile.PL
+	make
+	make test
+	make install
+
+DEPENDENCIES
+
+This module requires these other modules and libraries:
+
+	Net::SSLeay
+
+COPYRIGHT AND LICENCE
+
+Copyright 2004 by Apocalypse/Rocco Caputo
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+

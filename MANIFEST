@@ -1,0 +1,8 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/POE-Component-SSLify.t
+lib/POE/Component/SSLify.pm
+lib/POE/Component/SSLify/Handle.pm
+META.yml                                 Module meta-data (added by MakeMaker)
