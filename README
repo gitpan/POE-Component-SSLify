@@ -1,4 +1,4 @@
-POE-Component-SSLify version 0.01
+POE-Component-SSLify version 0.03
 =================================
 
 This module makes Net::SSLeay's SSL sockets behave with POE :)

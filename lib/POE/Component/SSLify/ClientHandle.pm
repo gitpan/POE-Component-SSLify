@@ -1,5 +1,5 @@
 # Declare our package
-package POE::Component::SSLify::Handle;
+package POE::Component::SSLify::ClientHandle;
 
 # Standard stuff to catch errors
 use strict qw(subs vars refs);				# Make sure we can't mess up
@@ -87,13 +87,17 @@ sub WRITE {
 __END__
 =head1 NAME
 
-POE::Component::SSLify::Handle
+POE::Component::SSLify::ClientHandle
 
 =head1 ABSTRACT
 
 	See POE::Component::SSLify
 
 =head1 CHANGES
+
+=head2 0.02
+
+	Renamed to ClientHandle
 
 =head2 0.01
 

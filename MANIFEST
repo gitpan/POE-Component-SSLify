@@ -3,5 +3,6 @@ MANIFEST
 README
 t/POE-Component-SSLify.t
 lib/POE/Component/SSLify.pm
-lib/POE/Component/SSLify/Handle.pm
-META.yml                                 Module meta-data (added by MakeMaker)
+lib/POE/Component/SSLify/ClientHandle.pm
+lib/POE/Component/SSLify/ServerHandle.pm
+META.yml
