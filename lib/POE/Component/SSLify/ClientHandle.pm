@@ -6,6 +6,7 @@ use strict qw(subs vars refs);				# Make sure we can't mess up
 use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
+# $Revision: 1168 $
 use vars qw( $VERSION );
 $VERSION = '0.02';
 
@@ -30,7 +31,7 @@ sub TIEHANDLE {
 	my $resp = Net::SSLeay::connect( $ssl ) or die_if_ssl_error( 'ssl connect' );
 
 	$POE::Component::SSLify::ServerHandle::Filenum_Object{ $fileno } = {
-		ssl    => $ssl, 
+		ssl    => $ssl,
 		ctx    => $ctx,
 		socket => $socket,
 	};
@@ -61,17 +62,6 @@ POE::Component::SSLify::ClientHandle
 
 	See POE::Component::SSLify
 
-=head1 CHANGES
-
-=head2 0.02
-
-	Renamed to ClientHandle
-	Now inherits from ServerHandle
-
-=head2 0.01
-
-	Initial release
-
 =head1 DESCRIPTION
 
 	This is a subclass of Net::SSLeay::Handle because their read() and sysread()
@@ -100,7 +90,7 @@ Apocalypse E<lt>apocal@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2004 by Apocalypse/Rocco Caputo
+Copyright 2006 by Apocalypse/Rocco Caputo
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

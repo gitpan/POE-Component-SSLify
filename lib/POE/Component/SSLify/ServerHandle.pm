@@ -6,6 +6,7 @@ use strict qw(subs vars refs);				# Make sure we can't mess up
 use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
+# $Revision: 1168 $
 use vars qw( $VERSION );
 $VERSION = '0.02';
 
@@ -156,18 +157,6 @@ POE::Component::SSLify::ServerHandle
 
 	See POE::Component::SSLify
 
-=head1 CHANGES
-
-=head2 0.02
-
-	Removed _CIPHER and moved it to the main SSLify.pm code
-	Oops, forgot to override _get_self and _get_ssl
-	Fixed a nasty leak issue
-
-=head2 0.01
-
-	Initial release
-
 =head1 DESCRIPTION
 
 	This is a subclass of Net::SSLeay::Handle because their read() and sysread()
@@ -193,14 +182,14 @@ Apocalypse E<lt>apocal@cpan.orgE<gt>
 	Original code is entirely Rocco Caputo ( Creator of POE ) -> I simply
 	packaged up the code into something everyone could use...
 
-	From the PoCo::Client::HTTP code =]
+	From the PoCo::Client::HTTP code for blocking sockets =]
 	# TODO - This code should probably become a POE::Kernel method,
     	# seeing as it's rather baroque and potentially useful in a number
     	# of places.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2004 by Apocalypse/Rocco Caputo
+Copyright 2006 by Apocalypse/Rocco Caputo
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

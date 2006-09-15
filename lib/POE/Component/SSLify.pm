@@ -6,8 +6,9 @@ use strict qw(subs vars refs);				# Make sure we can't mess up
 use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
+# $Revision: 1168 $
 use vars qw( $VERSION );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 # We need Net::SSLeay or all's a failure!
 BEGIN {
@@ -20,9 +21,9 @@ BEGIN {
 	} else {
 		# Check to make sure the versions are what we want
 		if ( ! (	defined $Net::SSLeay::VERSION and
-				$Net::SSLeay::VERSION >= 1.17 ) ) {
+				$Net::SSLeay::VERSION >= 1.30 ) ) {
 			# Argh...
-			die 'Please upgrade Net::SSLeay to 1.17+';
+			die 'Please upgrade Net::SSLeay to 1.30+';
 		} else {
 			# Finally, load our subclass :)
 			require POE::Component::SSLify::ClientHandle;
@@ -249,32 +250,9 @@ POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
 	Makes SSL use in POE a breeze!
 
-=head1 CHANGES
-
-=head2 0.04
-
-	Added new functions to extract data from the SSL socket -> GetCipher and GetSocket
-	In the case somebody knows Net::SSLeay more than me, added GetCTX to return the server-side CTX object
-	Removed the dependency on Net::SSLeay::Handle
-
-=head2 0.03
-
-	First stab at the server-side code, help me test it out!
-	Refactored SSLify() into client/server side, so update your program accordingly!
-
-=head2 0.02
-
-	Made sure the IO::Handle way was used only on MSWin32
-
-=head2 0.01
-
-	Initial release
-
 =head1 DESCRIPTION
 
 This component represents the standard way to do SSL in POE.
-
-
 
 =head1 NOTES
 
@@ -342,6 +320,10 @@ that you check for errors and not use SSL, like so:
 
 	Stuffs all the 4 functions in @EXPORT_OK so you have to request them directly
 
+=head1 BUGS
+
+On Win32 platforms SSL support is pretty shaky, please help me out with detailed error descriptions if it happens to you!
+
 =head1 SEE ALSO
 
 L<POE>
@@ -365,7 +347,7 @@ Apocalypse E<lt>apocal@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2004 by Apocalypse/Rocco Caputo
+Copyright 2006 by Apocalypse/Rocco Caputo
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
