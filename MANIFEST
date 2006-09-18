@@ -1,9 +1,11 @@
 Makefile.PL
 MANIFEST
 README
-t/POE-Component-SSLify.t
+t/1_load.t
+t/2_pod.t
 lib/POE/Component/SSLify.pm
 lib/POE/Component/SSLify/ClientHandle.pm
 lib/POE/Component/SSLify/ServerHandle.pm
 META.yml
 Changes
+examples/server.pl
