@@ -1,5 +1,9 @@
 Revision history for Perl extension POE::Component::SSLify.
 
+* 0.07
+
+	Fixed undefined $info - thanks RT #22372
+
 * 0.06
 
 	Kwalitee-related fixes

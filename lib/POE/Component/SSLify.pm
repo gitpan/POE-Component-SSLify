@@ -6,8 +6,8 @@ use strict qw(subs vars refs);				# Make sure we can't mess up
 use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
-# $Revision: 1168 $
-our $VERSION = '0.06';
+# $Revision: 1213 $
+our $VERSION = '0.07';
 
 # We need Net::SSLeay or all's a failure!
 BEGIN {
@@ -346,7 +346,7 @@ Apocalypse E<lt>apocal@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2006 by Apocalypse/Rocco Caputo
+Copyright 2007 by Apocalypse/Rocco Caputo
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

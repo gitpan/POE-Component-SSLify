@@ -43,9 +43,13 @@ sub TIEHANDLE {
 sub CLOSE {
 	my $self = shift;
 	my $info = $self->_get_self();
-	Net::SSLeay::free( $info->{'ssl'} );
-	Net::SSLeay::CTX_free( $info->{'ctx'} );
-	close $info->{'socket'};
+
+	# Thanks to Eric Waters -> closes RT #22372
+	if ( $info ) {
+		Net::SSLeay::free( $info->{'ssl'} );
+		Net::SSLeay::CTX_free( $info->{'ctx'} );
+		close $info->{'socket'};
+	}
 	delete $POE::Component::SSLify::ServerHandle::Filenum_Object{ $$self };
 	return 1;
 }
