@@ -8,7 +8,7 @@ use warnings FATAL => 'all';				# Enable warnings to catch errors
 # Initialize our version
 # $Revision: 1168 $
 use vars qw( $VERSION );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 # Import the SSL death routines
 use Net::SSLeay qw( die_now die_if_ssl_error );
@@ -107,6 +107,18 @@ sub WRITE {
 	}
 }
 
+# Sets binmode on the socket
+# Thanks to RT #27117
+sub BINMODE {
+	my $self = shift;
+	if (@_) {
+		my $mode = shift;
+		binmode $Filenum_Object{$$self}->{'socket'}, $mode;
+	} else {
+		binmode $Filenum_Object{$$self}->{'socket'};
+	}
+}
+
 # Closes the socket
 sub CLOSE {
 	my $self = shift;
@@ -189,7 +201,7 @@ Apocalypse E<lt>apocal@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2006 by Apocalypse/Rocco Caputo
+Copyright 2007 by Apocalypse/Rocco Caputo
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

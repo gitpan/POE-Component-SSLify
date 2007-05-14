@@ -7,7 +7,7 @@ use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
 # $Revision: 1213 $
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 # We need Net::SSLeay or all's a failure!
 BEGIN {
