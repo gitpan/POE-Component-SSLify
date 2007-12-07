@@ -1,5 +1,9 @@
 Revision history for Perl extension POE::Component::SSLify.
 
+* 0.09
+
+	Minor tweak of POD to enable better distro building - thanks RT #31238
+
 * 0.08
 
 	Added support for BINMODE - thanks RT #27117

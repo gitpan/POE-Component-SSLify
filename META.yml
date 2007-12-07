@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                POE-Component-SSLify
-version:             0.08
+version:             0.09
 abstract:            Makes using SSL in the world of POE easy!
 license:             perl
 generated_by:        ExtUtils::MakeMaker version 6.31

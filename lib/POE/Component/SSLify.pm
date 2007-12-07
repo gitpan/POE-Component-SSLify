@@ -6,8 +6,8 @@ use strict qw(subs vars refs);				# Make sure we can't mess up
 use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
-# $Revision: 1213 $
-our $VERSION = '0.08';
+# $Revision: 1223 $
+our $VERSION = '0.09';
 
 # We need Net::SSLeay or all's a failure!
 BEGIN {

@@ -6,9 +6,9 @@ use strict qw(subs vars refs);				# Make sure we can't mess up
 use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
-# $Revision: 1168 $
+# $Revision: 1223 $
 use vars qw( $VERSION );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 # Import the SSL death routines
 use Net::SSLeay qw( die_now die_if_ssl_error );
@@ -60,7 +60,7 @@ sub CLOSE {
 __END__
 =head1 NAME
 
-POE::Component::SSLify::ClientHandle
+POE::Component::SSLify::ClientHandle - client object for POE::Component::SSLify
 
 =head1 ABSTRACT
 
