@@ -1,5 +1,12 @@
 Revision history for Perl extension POE::Component::SSLify.
 
+* 0.10
+
+	More tweaks of POD - finally close RT #31238
+	Added SSL version support - thanks RT #31492
+	Added SSL CTX option support as a side effect
+	Added client.pl example with ReadLine support
+
 * 0.09
 
 	Minor tweak of POD to enable better distro building - thanks RT #31238

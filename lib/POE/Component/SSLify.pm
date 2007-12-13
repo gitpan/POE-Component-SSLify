@@ -6,8 +6,8 @@ use strict qw(subs vars refs);				# Make sure we can't mess up
 use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
-# $Revision: 1223 $
-our $VERSION = '0.09';
+# $Revision: 1248 $
+our $VERSION = '0.10';
 
 # We need Net::SSLeay or all's a failure!
 BEGIN {
@@ -97,8 +97,8 @@ sub Set_Blocking {
 
 # Okay, the main routine here!
 sub Client_SSLify {
-	# Get the socket!
-	my $socket = shift;
+	# Get the socket + version + options
+	my( $socket, $version, $options ) = @_;
 
 	# Validation...
 	if ( ! defined $socket ) {
@@ -110,7 +110,7 @@ sub Client_SSLify {
 
 	# Now, we create the new socket and bind it to our subclass of Net::SSLeay::Handle
 	my $newsock = gensym();
-	tie( *$newsock, 'POE::Component::SSLify::ClientHandle', $socket ) or die "Unable to tie to our subclass: $!";
+	tie( *$newsock, 'POE::Component::SSLify::ClientHandle', $socket, $version, $options ) or die "Unable to tie to our subclass: $!";
 
 	# All done!
 	return $newsock;
@@ -142,13 +142,35 @@ sub Server_SSLify {
 	return $newsock;
 }
 
-# Sets the key + certificate
 sub SSLify_Options {
-	# Get the key + cert
-	my( $key, $cert ) = @_;
+	# Get the key + cert + version + options
+	my( $key, $cert, $version, $options ) = @_;
 
-	$ctx = Net::SSLeay::CTX_new() or die_now( "CTX_new($ctx): $!" );
-	Net::SSLeay::CTX_set_options( $ctx, &Net::SSLeay::OP_ALL ) and die_if_ssl_error( 'ssl ctx set options' );
+	if ( defined $version and ! ref $version ) {
+		if ( $version eq 'sslv2' ) {
+			$ctx = Net::SSLeay::CTX_v2_new();
+		} elsif ( $version eq 'sslv3' ) {
+			$ctx = Net::SSLeay::CTX_v3_new();
+		} elsif ( $version eq 'tlsv1' ) {
+			$ctx = Net::SSLeay::CTX_tlsv1_new();
+		} elsif ( $version eq 'default' ) {
+			$ctx = Net::SSLeay::CTX_new();
+		} else {
+			die "unknown SSL version: $version";
+		}
+	} else {
+		$ctx = Net::SSLeay::CTX_new();
+	}
+	if ( ! defined $ctx ) {
+		die_now( "Failed to create SSL_CTX $!" );
+	}
+
+	# Set the default
+	if ( ! defined $options ) {
+		$options = &Net::SSLeay::OP_ALL;
+	}
+
+	Net::SSLeay::CTX_set_options( $ctx, $options ) and die_if_ssl_error( 'ssl ctx set options' );
 
 	# Following will ask password unless private key is not encrypted
 	Net::SSLeay::CTX_use_RSAPrivateKey_file( $ctx, $key, &Net::SSLeay::FILETYPE_PEM );
@@ -183,6 +205,7 @@ sub SSLify_GetSocket {
 1;
 
 __END__
+
 =head1 NAME
 
 POE::Component::SSLify - Makes using SSL in the world of POE easy!
@@ -214,19 +237,16 @@ POE::Component::SSLify - Makes using SSL in the world of POE easy!
 =head2 Server-side usage
 
 	# !!! Make sure you have a public key + certificate generated via Net::SSLeay's makecert.pl
+	# excellent howto: http://www.akadia.com/services/ssh_test_certificate.html
 
 	# Import the module
-	use POE::Component::SSLify qw( Server_SSLify SSLify_Options SSLify_GetCTX );
+	use POE::Component::SSLify qw( Server_SSLify SSLify_Options );
 
 	# Set the key + certificate file
-	eval { SSLify_Options( 'public-key.pem', 'public-cert.pem' ) };
+	eval { SSLify_Options( 'server.key', 'server.crt' ) };
 	if ( $@ ) {
 		# Unable to load key or certificate file...
 	}
-
-	# Ah, I want to set some options ( not required )
-	# my $ctx = SSLify_GetCTX();
-	# Net::SSLeay::CTX_set_options( $ctx, foo );
 
 	# Create a normal SocketFactory wheel or something
 	my $factory = POE::Wheel::SocketFactory->new( ... );
@@ -287,6 +307,19 @@ that you check for errors and not use SSL, like so:
 
 	Accepts a socket, returns a brand new socket SSLified
 
+	Optionally accepts the SSL version + CTX options
+		Client_SSLify( $socket, $version, $options );
+
+	Known versions:
+		* sslv2
+		* sslv3
+		* tlsv1
+		* default
+
+	By default we use the version: default
+
+	By default we don't set any options
+
 =head2 Server_SSLify
 
 	Accepts a socket, returns a brand new socket SSLified
@@ -296,6 +329,19 @@ that you check for errors and not use SSL, like so:
 =head2 SSLify_Options
 
 	Accepts the location of the SSL key + certificate files and does it's job
+
+	Optionally accepts the SSL version + CTX options
+		SSLify_Options( $key, $cert, $version, $options );
+
+	Known versions:
+		* sslv2
+		* sslv3
+		* tlsv1
+		* default
+
+	By default we use the version: default
+
+	By default we use the options: &Net::SSLeay::OP_ALL
 
 =head2 SSLify_GetCTX
 

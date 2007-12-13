@@ -6,7 +6,7 @@ use strict qw(subs vars refs);				# Make sure we can't mess up
 use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
-# $Revision: 1223 $
+# $Revision: 1247 $
 use vars qw( $VERSION );
 $VERSION = '0.04';
 
@@ -161,6 +161,7 @@ sub _get_self {
 1;
 
 __END__
+
 =head1 NAME
 
 POE::Component::SSLify::ServerHandle - server object for POE::Component::SSLify

@@ -6,9 +6,9 @@ use strict qw(subs vars refs);				# Make sure we can't mess up
 use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
-# $Revision: 1223 $
+# $Revision: 1247 $
 use vars qw( $VERSION );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 # Import the SSL death routines
 use Net::SSLeay qw( die_now die_if_ssl_error );
@@ -19,9 +19,30 @@ use vars qw( @ISA );
 
 # Override TIEHANDLE because we create a CTX
 sub TIEHANDLE {
-	my ( $class, $socket ) = @_;
+	my ( $class, $socket, $version, $options ) = @_;
 
-	my $ctx = Net::SSLeay::CTX_new() or die_now( "Failed to create SSL_CTX $!" );
+	my $ctx;
+	if ( defined $version and ! ref $version ) {
+		if ( $version eq 'sslv2' ) {
+			$ctx = Net::SSLeay::CTX_v2_new();
+		} elsif ( $version eq 'sslv3' ) {
+			$ctx = Net::SSLeay::CTX_v3_new();
+		} elsif ( $version eq 'tlsv1' ) {
+			$ctx = Net::SSLeay::CTX_tlsv1_new();
+		} elsif ( $version eq 'default' ) {
+			$ctx = Net::SSLeay::CTX_new();
+		} else {
+			die "unknown SSL version: $version";
+		}
+	} else {
+		$ctx = Net::SSLeay::CTX_new();
+	}
+	$ctx || die_now( "Failed to create SSL_CTX $!" );
+
+	if ( defined $options ) {
+		Net::SSLeay::CTX_set_options( $ctx, $options ) and die_if_ssl_error( 'ssl ctx set options' );
+	}
+
 	my $ssl = Net::SSLeay::new( $ctx ) or die_now( "Failed to create SSL $!" );
 
 	my $fileno = fileno( $socket );
@@ -58,6 +79,7 @@ sub CLOSE {
 1;
 
 __END__
+
 =head1 NAME
 
 POE::Component::SSLify::ClientHandle - client object for POE::Component::SSLify
@@ -94,7 +116,7 @@ Apocalypse E<lt>apocal@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2006 by Apocalypse/Rocco Caputo
+Copyright 2007 by Apocalypse/Rocco Caputo
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

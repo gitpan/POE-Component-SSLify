@@ -9,3 +9,4 @@ lib/POE/Component/SSLify/ServerHandle.pm
 META.yml
 Changes
 examples/server.pl
+examples/client.pl
