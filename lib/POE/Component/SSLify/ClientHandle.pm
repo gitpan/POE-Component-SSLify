@@ -3,9 +3,8 @@ package POE::Component::SSLify::ClientHandle;
 use strict; use warnings;
 
 # Initialize our version
-# $Revision: 1247 $
 use vars qw( $VERSION );
-$VERSION = '0.05';
+$VERSION = (qw$LastChangedRevision: 7 $)[1];
 
 # Import the SSL death routines
 use Net::SSLeay qw( die_now die_if_ssl_error );

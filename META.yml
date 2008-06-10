@@ -1,14 +1,23 @@
 --- #YAML:1.0
 name:                POE-Component-SSLify
-version:             0.11
+version:             0.12
 abstract:            Makes using SSL in the world of POE easy!
 license:             perl
-generated_by:        ExtUtils::MakeMaker version 6.31
+author:              
+    - Apocalypse <APOCAL@cpan.org>
+generated_by:        ExtUtils::MakeMaker version 6.44
 distribution_type:   module
 requires:     
     Net::SSLeay:                   1.30
+    Test::CheckManifest:           0
+    Test::Distribution:            0
+    Test::HasVersion:              0
+    Test::Kwalitee:                0
+    Test::MinimumVersion:          0
+    Test::Pod:                     0
+    Test::Pod::Coverage:           0
+    Test::Strict:                  0
+    Test::UseAllModules:           0
 meta-spec:
-    url:     http://module-build.sourceforge.net/META-spec-v1.2.html
-    version: 1.2
-author:
-    - Apocalypse <APOCAL@cpan.org>
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3

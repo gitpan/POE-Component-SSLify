@@ -1,4 +1,5 @@
-use Test::More tests => 1;
+#!/usr/bin/perl
 
-# Test the load!
-use_ok('POE::Component::SSLify');
+# Import the stuff
+use Test::UseAllModules;
+BEGIN { all_uses_ok(); }

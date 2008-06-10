@@ -2,9 +2,9 @@
 package POE::Component::SSLify;
 use strict; use warnings;
 
-# Initialize our version
-# $Revision: 1253 $
-our $VERSION = '0.11';
+# Initialize our version $LastChangedRevision: 7 $
+use vars qw( $VERSION );
+$VERSION = '0.12';
 
 # We need Net::SSLeay or all's a failure!
 BEGIN {
