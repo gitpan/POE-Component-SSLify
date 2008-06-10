@@ -1,8 +1,7 @@
 Makefile.PL
 MANIFEST
+MANIFEST.SKIP
 README
-t/1_load.t
-t/2_pod.t
 lib/POE/Component/SSLify.pm
 lib/POE/Component/SSLify/ClientHandle.pm
 lib/POE/Component/SSLify/ServerHandle.pm
@@ -10,3 +9,12 @@ META.yml
 Changes
 examples/server.pl
 examples/client.pl
+t/1_load.t
+t/a_kwalitee.t
+t/a_pod.t
+t/a_strict.t
+t/a_hasversion.t
+t/a_minimumversion.t
+t/a_podcoverage.t
+t/a_manifest.t
+t/a_distribution.t

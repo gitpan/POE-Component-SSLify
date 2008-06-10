@@ -1,5 +1,17 @@
 Revision history for Perl extension POE::Component::SSLify.
 
+* 0.11
+
+	allowed setting of client-side context ( $ctx ) object - thanks RT #34442
+
+	squashed typo in pod - thanks Dariusz!
+
+	changed version check code to regexp for compatibility with SSLeay v1.33_01 - thanks Mark!
+
+	added SSLify_ContextCreate helper function
+
+	backported Net::SSLeay's removal of %Filenum_Objects hash
+
 * 0.10
 
 	More tweaks of POD - finally close RT #31238

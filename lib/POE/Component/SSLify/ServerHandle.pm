@@ -1,20 +1,14 @@
 # Declare our package
 package POE::Component::SSLify::ServerHandle;
-
-# Standard stuff to catch errors
-use strict qw(subs vars refs);				# Make sure we can't mess up
-use warnings FATAL => 'all';				# Enable warnings to catch errors
+use strict; use warnings;
 
 # Initialize our version
 # $Revision: 1247 $
 use vars qw( $VERSION );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 # Import the SSL death routines
 use Net::SSLeay qw( die_now die_if_ssl_error );
-
-# Argh, we actually copy over some stuff
-our %Filenum_Object;    #-- hash of hashes, keyed by fileno()
 
 # Ties the socket
 sub TIEHANDLE {
@@ -28,13 +22,14 @@ sub TIEHANDLE {
 
 	my $err = Net::SSLeay::accept( $ssl ) and die_if_ssl_error( 'ssl accept' );
 
-	$Filenum_Object{ $fileno } = {
-		ssl    => $ssl,
-		ctx    => $ctx,
-		socket => $socket,
-	};
+	my $self = bless {
+		'ssl'		=> $ssl,
+		'ctx'		=> $ctx,
+		'socket'	=> $socket,
+		'fileno'	=> $fileno,
+	}, $class;
 
-	return bless \$fileno, $class;
+	return $self;
 }
 
 # Read something from the socket
@@ -45,12 +40,9 @@ sub READ {
 	# Get the pointers to buffer, length, and the offset
 	my( $buf, $len, $offset ) = \( @_ );
 
-	# Get the actual ssl handle
-	my $ssl = $Filenum_Object{ $$self }->{'ssl'};
-
 	# If we have no offset, replace the buffer with some input
 	if ( ! defined $$offset ) {
-		$$buf = Net::SSLeay::read( $ssl, $$len );
+		$$buf = Net::SSLeay::read( $self->{'ssl'}, $$len );
 
 		# Are we done?
 		if ( defined $$buf ) {
@@ -63,7 +55,7 @@ sub READ {
 	}
 
 	# Now, actually read the data
-	defined( my $read = Net::SSLeay::read( $ssl, $$len ) ) or return undef;
+	defined( my $read = Net::SSLeay::read( $self->{'ssl'}, $$len ) ) or return undef;
 
 	# Figure out the buffer and offset
 	my $buf_len = length( $$buf );
@@ -90,11 +82,8 @@ sub WRITE {
 		$offset = 0;
 	}
 
-	# Okay, get the ssl handle
-	my $ssl = $Filenum_Object{ $$self }->{'ssl'};
-
 	# We count the number of characters written to the socket
-	my $wrote_len = Net::SSLeay::write( $ssl, substr( $buf, $offset, $len ) );
+	my $wrote_len = Net::SSLeay::write( $self->{'ssl'}, substr( $buf, $offset, $len ) );
 
 	# Did we get an error or number of bytes written?
 	# Net::SSLeay::write() returns the number of bytes written, or -1 on error.
@@ -113,18 +102,26 @@ sub BINMODE {
 	my $self = shift;
 	if (@_) {
 		my $mode = shift;
-		binmode $Filenum_Object{$$self}->{'socket'}, $mode;
+		binmode $self->{'socket'}, $mode;
 	} else {
-		binmode $Filenum_Object{$$self}->{'socket'};
+		binmode $self->{'socket'};
 	}
 }
 
 # Closes the socket
 sub CLOSE {
 	my $self = shift;
-	Net::SSLeay::free( $Filenum_Object{ $$self }->{'ssl'} );
-	close $Filenum_Object{ $$self }->{'socket'};
-	delete $Filenum_Object{ $$self };
+	if ( defined $self->{'socket'} ) {
+		Net::SSLeay::free( $self->{'ssl'} );
+		close( $self->{'socket'} );
+		undef $self->{'socket'};
+
+		# do we need to do CTX_free?
+		if ( exists $self->{'client'} ) {
+			Net::SSLeay::CTX_free( $self->{'ctx'} );
+		}
+	}
+
 	return 1;
 }
 
@@ -133,14 +130,15 @@ sub DESTROY {
 	my $self = shift;
 
 	# Did we already CLOSE?
-	if ( exists $Filenum_Object{ $$self } ) {
+	if ( defined $self->{'socket'} ) {
 		# Guess not...
 		$self->CLOSE();
 	}
 }
 
 sub FILENO {
-	return ${ $_[0] };
+	my $self = shift;
+	return $self->{'fileno'};
 }
 
 # Not implemented TIE's
@@ -150,11 +148,6 @@ sub READLINE {
 
 sub PRINT {
 	die 'Not Implemented';
-}
-
-# Returns our hash
-sub _get_self {
-	return $Filenum_Object{ ${ $_[0] } };
 }
 
 # End of module
@@ -202,7 +195,7 @@ Apocalypse E<lt>apocal@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2007 by Apocalypse/Rocco Caputo
+Copyright 2008 by Apocalypse/Rocco Caputo
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

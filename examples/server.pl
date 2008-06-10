@@ -2,7 +2,8 @@
 use strict; use warnings;
 
 use POE;
-use POE::Component::SSLify qw( Server_SSLify SSLify_Options );
+use Socket qw( inet_ntoa unpack_sockaddr_in );
+use POE::Component::SSLify qw( Server_SSLify SSLify_Options SSLify_GetCipher SSLify_GetSocket );
 use POE::Wheel::ReadWrite;
 use POE::Wheel::SocketFactory;
 use POE::Driver::SysRW;
@@ -12,7 +13,7 @@ POE::Session->create(
 	'inline_states'	=>	{
 		'_start'	=>	sub {
 			# Okay, set the SSL options
-			SSLify_Options( 'server.key', 'server.crt', 'default' );
+			SSLify_Options( 'server.key', 'server.crt' );
 
 			# Set the alias
 			$_[KERNEL]->alias_set( 'main' );
@@ -33,6 +34,9 @@ POE::Session->create(
 
 			# SSLify it!
 			$socket = Server_SSLify( $socket );
+
+			# testing stuff
+			warn "got connection from: " . inet_ntoa( ( unpack_sockaddr_in( getpeername( SSLify_GetSocket( $socket ) ) ) )[1] ) . " cipher type: " . SSLify_GetCipher( $socket );
 
 			# Hand it off to ReadWrite
 			my $wheel = POE::Wheel::ReadWrite->new(

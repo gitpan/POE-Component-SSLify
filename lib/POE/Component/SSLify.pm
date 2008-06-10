@@ -1,13 +1,10 @@
 # Declare our package
 package POE::Component::SSLify;
-
-# Standard stuff to catch errors
-use strict qw(subs vars refs);				# Make sure we can't mess up
-use warnings FATAL => 'all';				# Enable warnings to catch errors
+use strict; use warnings;
 
 # Initialize our version
-# $Revision: 1248 $
-our $VERSION = '0.10';
+# $Revision: 1253 $
+our $VERSION = '0.11';
 
 # We need Net::SSLeay or all's a failure!
 BEGIN {
@@ -20,19 +17,18 @@ BEGIN {
 	} else {
 		# Check to make sure the versions are what we want
 		if ( ! (	defined $Net::SSLeay::VERSION and
-				$Net::SSLeay::VERSION >= 1.30 ) ) {
-			# Argh...
-			die 'Please upgrade Net::SSLeay to 1.30+';
-		} else {
-			# Finally, load our subclass :)
-			require POE::Component::SSLify::ClientHandle;
-			require POE::Component::SSLify::ServerHandle;
-
-			# Initialize Net::SSLeay
-			Net::SSLeay::load_error_strings();
-			Net::SSLeay::SSLeay_add_ssl_algorithms();
-			Net::SSLeay::randomize();
+				$Net::SSLeay::VERSION =~ /^1\.3/ ) ) {
+			warn 'Please upgrade Net::SSLeay to v1.30+ installed: v' . $Net::SSLeay::VERSION;
 		}
+
+		# Finally, load our subclass :)
+		require POE::Component::SSLify::ClientHandle;
+		require POE::Component::SSLify::ServerHandle;
+
+		# Initialize Net::SSLeay
+		Net::SSLeay::load_error_strings();
+		Net::SSLeay::SSLeay_add_ssl_algorithms();
+		Net::SSLeay::randomize();
 	}
 }
 
@@ -40,7 +36,7 @@ BEGIN {
 require Exporter;
 use vars qw( @ISA @EXPORT_OK );
 @ISA = qw( Exporter );
-@EXPORT_OK = qw( Client_SSLify Server_SSLify SSLify_Options SSLify_GetCTX SSLify_GetCipher SSLify_GetSocket );
+@EXPORT_OK = qw( Client_SSLify Server_SSLify SSLify_Options SSLify_GetCTX SSLify_GetCipher SSLify_GetSocket SSLify_ContextCreate );
 
 # Bring in some socket-related stuff
 use Symbol qw( gensym );
@@ -97,8 +93,8 @@ sub Set_Blocking {
 
 # Okay, the main routine here!
 sub Client_SSLify {
-	# Get the socket + version + options
-	my( $socket, $version, $options ) = @_;
+	# Get the socket + version + options + ctx
+	my( $socket, $version, $options, $ctx ) = @_;
 
 	# Validation...
 	if ( ! defined $socket ) {
@@ -110,7 +106,7 @@ sub Client_SSLify {
 
 	# Now, we create the new socket and bind it to our subclass of Net::SSLeay::Handle
 	my $newsock = gensym();
-	tie( *$newsock, 'POE::Component::SSLify::ClientHandle', $socket, $version, $options ) or die "Unable to tie to our subclass: $!";
+	tie( *$newsock, 'POE::Component::SSLify::ClientHandle', $socket, $version, $options, $ctx ) or die "Unable to tie to our subclass: $!";
 
 	# All done!
 	return $newsock;
@@ -142,27 +138,21 @@ sub Server_SSLify {
 	return $newsock;
 }
 
+sub SSLify_ContextCreate {
+	# Get the key + cert + version + options
+	my( $key, $cert, $version, $options ) = @_;
+
+	return createSSLcontext( $key, $cert, $version, $options );
+}
+
 sub SSLify_Options {
 	# Get the key + cert + version + options
 	my( $key, $cert, $version, $options ) = @_;
 
-	if ( defined $version and ! ref $version ) {
-		if ( $version eq 'sslv2' ) {
-			$ctx = Net::SSLeay::CTX_v2_new();
-		} elsif ( $version eq 'sslv3' ) {
-			$ctx = Net::SSLeay::CTX_v3_new();
-		} elsif ( $version eq 'tlsv1' ) {
-			$ctx = Net::SSLeay::CTX_tlsv1_new();
-		} elsif ( $version eq 'default' ) {
-			$ctx = Net::SSLeay::CTX_new();
-		} else {
-			die "unknown SSL version: $version";
-		}
-	} else {
-		$ctx = Net::SSLeay::CTX_new();
-	}
-	if ( ! defined $ctx ) {
-		die_now( "Failed to create SSL_CTX $!" );
+	# sanity
+	if ( ! defined $key or ! defined $cert ) {
+		die 'no key/cert specified';
+		return;
 	}
 
 	# Set the default
@@ -170,35 +160,84 @@ sub SSLify_Options {
 		$options = &Net::SSLeay::OP_ALL;
 	}
 
-	Net::SSLeay::CTX_set_options( $ctx, $options ) and die_if_ssl_error( 'ssl ctx set options' );
+	# set the context, possibly overwriting the previous one
+	if ( defined $ctx ) {
+		Net::SSLeay::CTX_free( $ctx );
+		undef $ctx;
+	}
+	$ctx = createSSLcontext( $key, $cert, $version, $options );
 
-	# Following will ask password unless private key is not encrypted
-	Net::SSLeay::CTX_use_RSAPrivateKey_file( $ctx, $key, &Net::SSLeay::FILETYPE_PEM );
-	die_if_ssl_error( 'private key' );
+	# all done!
+	return 1;
+}
+
+sub createSSLcontext {
+	my( $key, $cert, $version, $options ) = @_;
+
+	my $context;
+	if ( defined $version and ! ref $version ) {
+		if ( $version eq 'sslv2' ) {
+			$context = Net::SSLeay::CTX_v2_new();
+		} elsif ( $version eq 'sslv3' ) {
+			$context = Net::SSLeay::CTX_v3_new();
+		} elsif ( $version eq 'tlsv1' ) {
+			$context = Net::SSLeay::CTX_tlsv1_new();
+		} elsif ( $version eq 'default' ) {
+			$context = Net::SSLeay::CTX_new();
+		} else {
+			die "unknown SSL version: $version";
+			return;
+		}
+	} else {
+		$context = Net::SSLeay::CTX_new();
+	}
+	if ( ! defined $context ) {
+		die_now( "Failed to create SSL_CTX $!" );
+		return;
+	}
+
+	# do we need to set options?
+	if ( defined $options ) {
+		Net::SSLeay::CTX_set_options( $context, $options ) and die_if_ssl_error( 'ssl ctx set options' );
+	}
+
+	# do we need to set key/etc?
+	if ( defined $key ) {
+		# Following will ask password unless private key is not encrypted
+		Net::SSLeay::CTX_use_RSAPrivateKey_file( $context, $key, &Net::SSLeay::FILETYPE_PEM );
+		die_if_ssl_error( 'private key' );
+	}
 
 	# Set the cert file
-	Net::SSLeay::CTX_use_certificate_file( $ctx, $cert, &Net::SSLeay::FILETYPE_PEM );
-	die_if_ssl_error( 'certificate' );
+	if ( defined $cert ) {
+		Net::SSLeay::CTX_use_certificate_file( $context, $cert, &Net::SSLeay::FILETYPE_PEM );
+		die_if_ssl_error( 'certificate' );
+	}
 
 	# All done!
-	return 1;
+	return $context;
 }
 
 # Returns the server-side CTX in case somebody wants to play with it
 sub SSLify_GetCTX {
-	return $ctx;
+	my $sock = shift;
+	if ( ! defined $sock ) {
+		return $ctx;
+	} else {
+		return tied( *$sock )->{'ctx'};
+	}
 }
 
 # Gives you the cipher type of a SSLified socket
 sub SSLify_GetCipher {
 	my $sock = shift;
-	return Net::SSLeay::get_cipher( tied( *$sock )->_get_self()->{'ssl'} );
+	return Net::SSLeay::get_cipher( tied( *$sock )->{'ssl'} );
 }
 
 # Gives you the "Real" Socket to play with
 sub SSLify_GetSocket {
 	my $sock = shift;
-	return tied( *$sock )->_get_self()->{'socket'};
+	return tied( *$sock )->{'socket'};
 }
 
 # End of module
@@ -301,14 +340,24 @@ that you check for errors and not use SSL, like so:
 		}
 	}
 
+=head2 Mixing Server/Client in the same program
+
+	Some users have reported success, others failure when they tried to utilize SSLify in both roles. This
+	would require more investigation, so please tread carefully if you need to use it!
+
 =head1 FUNCTIONS
 
 =head2 Client_SSLify
 
-	Accepts a socket, returns a brand new socket SSLified
+	Accepts a socket, returns a brand new socket SSLified. Optionally accepts SSL
+	context data.
+		my $socket = shift;						# get the socket from somewhere
+		$socket = Client_SSLify( $socket );				# the default
+		$socket = Client_SSLify( $socket, $version, $options );		# sets more options for the context
+		$socket = Client_SSLify( $socket, undef, undef, $ctx );		# pass in a custom context
 
-	Optionally accepts the SSL version + CTX options
-		Client_SSLify( $socket, $version, $options );
+	If $ctx is defined, SSLify will ignore other args. If $ctx isn't defined, SSLify
+	will create it from the $version + $options parameters.
 
 	Known versions:
 		* sslv2
@@ -320,9 +369,19 @@ that you check for errors and not use SSL, like so:
 
 	By default we don't set any options
 
+	NOTE: The way to have a client socket with proper certificates set up is:
+		my $socket = shift;	# get the socket from somewhere
+		my $ctx = SSLify_ContextCreate( undef, undef, 'server.key', 'server.crt' );
+		$socket = Client_SSLify( $socket, undef, undef, $ctx );
+
+	BEWARE: If you passed in a CTX, SSLify will do Net::SSLeay::CTX_free( $ctx ) when the
+	socket is destroyed. This means you cannot reuse contexts!
+
 =head2 Server_SSLify
 
 	Accepts a socket, returns a brand new socket SSLified
+		my $socket = shift;	# get the socket from somewhere
+		$socket = Server_SSLify( $socket );
 
 	NOTE: SSLify_Options must be set first!
 
@@ -347,6 +406,10 @@ that you check for errors and not use SSL, like so:
 
 	Returns the server-side CTX in case you wanted to play around with it :)
 
+	If passed in a socket, it will return that socket's $ctx instead of the global.
+		my $ctx = SSLify_GetCTX();			# get the one set via SSLify_Options
+		my $ctx = SSLify_GetCTX( $sslified_sock );	# get the one in the object
+
 =head2 SSLify_GetCipher
 
 	Returns the cipher used by the SSLified socket
@@ -359,11 +422,28 @@ that you check for errors and not use SSL, like so:
 	Returns the actual socket used by the SSLified socket, useful for stuff like getpeername()/getsockname()
 
 	Example:
-		print "Remote IP is: " . ( unpack_sockaddr_in( getpeername( SSLify_GetSocket( $sslified_sock ) ) ) )[0] . "\n";
+		print "Remote IP is: " . inet_ntoa( ( unpack_sockaddr_in( getpeername( SSLify_GetSocket( $sslified_sock ) ) ) )[1] ) . "\n";
+
+=head2 SSLify_ContextCreate
+
+	Accepts some options, and returns a brand-new SSL context object ( $ctx )
+		my $ctx = SSLify_ContextCreate( $version, $options, $key, $cert );
+
+	Known versions:
+		* sslv2
+		* sslv3
+		* tlsv1
+		* default
+
+	By default we use the version: default
+
+	By default we don't set any options
+
+	By default we don't use the SSL key + certificate files
 
 =head1 EXPORT
 
-	Stuffs all the 4 functions in @EXPORT_OK so you have to request them directly
+	Stuffs all of the above functions in @EXPORT_OK so you have to request them directly
 
 =head1 BUGS
 
@@ -392,7 +472,7 @@ Apocalypse E<lt>apocal@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2007 by Apocalypse/Rocco Caputo
+Copyright 2008 by Apocalypse/Rocco Caputo
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
