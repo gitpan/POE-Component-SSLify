@@ -1,5 +1,9 @@
 Revision history for Perl extension POE::Component::SSLify.
 
+* 0.13
+
+	POD typo errors in SSLify_ContextCreate - thanks ASCENT!
+
 * 0.12
 
 	Kwalitee-related fixes

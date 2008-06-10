@@ -4,7 +4,7 @@ use strict; use warnings;
 
 # Initialize our version $LastChangedRevision: 7 $
 use vars qw( $VERSION );
-$VERSION = '0.12';
+$VERSION = '0.13';
 
 # We need Net::SSLeay or all's a failure!
 BEGIN {
@@ -371,7 +371,7 @@ that you check for errors and not use SSL, like so:
 
 	NOTE: The way to have a client socket with proper certificates set up is:
 		my $socket = shift;	# get the socket from somewhere
-		my $ctx = SSLify_ContextCreate( undef, undef, 'server.key', 'server.crt' );
+		my $ctx = SSLify_ContextCreate( 'server.key', 'server.crt' );
 		$socket = Client_SSLify( $socket, undef, undef, $ctx );
 
 	BEWARE: If you passed in a CTX, SSLify will do Net::SSLeay::CTX_free( $ctx ) when the
@@ -427,7 +427,9 @@ that you check for errors and not use SSL, like so:
 =head2 SSLify_ContextCreate
 
 	Accepts some options, and returns a brand-new SSL context object ( $ctx )
-		my $ctx = SSLify_ContextCreate( $version, $options, $key, $cert );
+		my $ctx = SSLify_ContextCreate();
+		my $ctx = SSLify_ContextCreate( $key, $cert );
+		my $ctx = SSLify_ContextCreate( $key, $cert, $version, $options );
 
 	Known versions:
 		* sslv2

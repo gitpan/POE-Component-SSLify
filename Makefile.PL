@@ -8,6 +8,7 @@ WriteMakefile(
 		'Net::SSLeay'		=> '1.30',
 
 		# test stuff
+		'Test::More'		=> 0,
 		'Test::Distribution'	=> 0,
 		'Test::Strict'		=> 0,
 		'Test::HasVersion'	=> 0,
