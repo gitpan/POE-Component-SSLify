@@ -1,6 +1,7 @@
-^.includepath
-^.project
-^.settings/
+# Avoid Eclipse stuff
+\.includepath$
+\.project$
+\.settings/
 
 # Avoid version control files.
 \B\.svn\b

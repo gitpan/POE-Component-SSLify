@@ -1,19 +1,213 @@
-POE-Component-SSLify
-====================
+NAME
+    POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
-This module makes Net::SSLeay's SSL sockets behave with POE :)
+SYNOPSIS
+  Client-side usage
+            # Import the module
+            use POE::Component::SSLify qw( Client_SSLify );
 
-INSTALLATION
+            # Create a normal SocketFactory wheel or something
+            my $factory = POE::Wheel::SocketFactory->new( ... );
 
-To install this module type the following:
+            # Converts the socket into a SSL socket POE can communicate with
+            eval { $socket = Client_SSLify( $socket ) };
+            if ( $@ ) {
+                    # Unable to SSLify it...
+            }
 
-	perl Makefile.PL
-	make
-	make test
-	make install
+            # Now, hand it off to ReadWrite
+            my $rw = POE::Wheel::ReadWrite->new(
+                    Handle  =>      $socket,
+                    ...
+            );
 
-MORE INFO
+            # Use it as you wish...
 
-	# After installing:
-	perldoc POE::Component::SSLify
+  Server-side usage
+            # !!! Make sure you have a public key + certificate generated via Net::SSLeay's makecert.pl
+            # excellent howto: http://www.akadia.com/services/ssh_test_certificate.html
+
+            # Import the module
+            use POE::Component::SSLify qw( Server_SSLify SSLify_Options );
+
+            # Set the key + certificate file
+            eval { SSLify_Options( 'server.key', 'server.crt' ) };
+            if ( $@ ) {
+                    # Unable to load key or certificate file...
+            }
+
+            # Create a normal SocketFactory wheel or something
+            my $factory = POE::Wheel::SocketFactory->new( ... );
+
+            # Converts the socket into a SSL socket POE can communicate with
+            eval { $socket = Server_SSLify( $socket ) };
+            if ( $@ ) {
+                    # Unable to SSLify it...
+            }
+
+            # Now, hand it off to ReadWrite
+            my $rw = POE::Wheel::ReadWrite->new(
+                    Handle  =>      $socket,
+                    ...
+            );
+
+            # Use it as you wish...
+
+ABSTRACT
+            Makes SSL use in POE a breeze!
+
+DESCRIPTION
+    This component represents the standard way to do SSL in POE.
+
+NOTES
+  Socket methods doesn't work
+    The new socket this module gives you actually is some tied socket magic,
+    so you cannot do stuff like getpeername() or getsockname(). The only way
+    to do it is to use SSLify_GetSocket and then operate on the socket it
+    returns.
+
+  Dying everywhere...
+    This module will die() if Net::SSLeay could not be loaded or it is not
+    the version we want. So, it is recommended that you check for errors and
+    not use SSL, like so:
+
+            eval { use POE::Component::SSLify };
+            if ( $@ ) {
+                    $sslavailable = 0;
+            } else {
+                    $sslavailable = 1;
+            }
+
+            # Make socket SSL!
+            if ( $sslavailable ) {
+                    eval { $socket = POE::Component::SSLify::Client_SSLify( $socket ) };
+                    if ( $@ ) {
+                            # Unable to SSLify the socket...
+                    }
+            }
+
+  Mixing Server/Client in the same program
+            Some users have reported success, others failure when they tried to utilize SSLify in both roles. This
+            would require more investigation, so please tread carefully if you need to use it!
+
+FUNCTIONS
+  Client_SSLify
+            Accepts a socket, returns a brand new socket SSLified. Optionally accepts SSL
+            context data.
+                    my $socket = shift;                                             # get the socket from somewhere
+                    $socket = Client_SSLify( $socket );                             # the default
+                    $socket = Client_SSLify( $socket, $version, $options );         # sets more options for the context
+                    $socket = Client_SSLify( $socket, undef, undef, $ctx );         # pass in a custom context
+
+            If $ctx is defined, SSLify will ignore other args. If $ctx isn't defined, SSLify
+            will create it from the $version + $options parameters.
+
+            Known versions:
+                    * sslv2
+                    * sslv3
+                    * tlsv1
+                    * default
+
+            By default we use the version: default
+
+            By default we don't set any options
+
+            NOTE: The way to have a client socket with proper certificates set up is:
+                    my $socket = shift;     # get the socket from somewhere
+                    my $ctx = SSLify_ContextCreate( 'server.key', 'server.crt' );
+                    $socket = Client_SSLify( $socket, undef, undef, $ctx );
+
+            BEWARE: If you passed in a CTX, SSLify will do Net::SSLeay::CTX_free( $ctx ) when the
+            socket is destroyed. This means you cannot reuse contexts!
+
+  Server_SSLify
+            Accepts a socket, returns a brand new socket SSLified
+                    my $socket = shift;     # get the socket from somewhere
+                    $socket = Server_SSLify( $socket );
+
+            NOTE: SSLify_Options must be set first!
+
+  SSLify_Options
+            Accepts the location of the SSL key + certificate files and does it's job
+
+            Optionally accepts the SSL version + CTX options
+                    SSLify_Options( $key, $cert, $version, $options );
+
+            Known versions:
+                    * sslv2
+                    * sslv3
+                    * tlsv1
+                    * default
+
+            By default we use the version: default
+
+            By default we use the options: &Net::SSLeay::OP_ALL
+
+  SSLify_GetCTX
+            Returns the server-side CTX in case you wanted to play around with it :)
+
+            If passed in a socket, it will return that socket's $ctx instead of the global.
+                    my $ctx = SSLify_GetCTX();                      # get the one set via SSLify_Options
+                    my $ctx = SSLify_GetCTX( $sslified_sock );      # get the one in the object
+
+  SSLify_GetCipher
+            Returns the cipher used by the SSLified socket
+
+            Example:
+                    print "SSL Cipher is: " . SSLify_GetCipher( $sslified_sock ) . "\n";
+
+  SSLify_GetSocket
+            Returns the actual socket used by the SSLified socket, useful for stuff like getpeername()/getsockname()
+
+            Example:
+                    print "Remote IP is: " . inet_ntoa( ( unpack_sockaddr_in( getpeername( SSLify_GetSocket( $sslified_sock ) ) ) )[1] ) . "\n";
+
+  SSLify_ContextCreate
+            Accepts some options, and returns a brand-new SSL context object ( $ctx )
+                    my $ctx = SSLify_ContextCreate();
+                    my $ctx = SSLify_ContextCreate( $key, $cert );
+                    my $ctx = SSLify_ContextCreate( $key, $cert, $version, $options );
+
+            Known versions:
+                    * sslv2
+                    * sslv3
+                    * tlsv1
+                    * default
+
+            By default we use the version: default
+
+            By default we don't set any options
+
+            By default we don't use the SSL key + certificate files
+
+EXPORT
+            Stuffs all of the above functions in @EXPORT_OK so you have to request them directly
+
+BUGS
+    On Win32 platforms SSL support is pretty shaky, please help me out with
+    detailed error descriptions if it happens to you!
+
+SEE ALSO
+    POE
+
+    Net::SSLeay
+
+AUTHOR
+    Apocalypse <apocal@cpan.org>
+
+PROPS
+            Original code is entirely Rocco Caputo ( Creator of POE ) -> I simply
+            packaged up the code into something everyone could use and accepted the burden
+            of maintaining it :)
+
+            From the PoCo::Client::HTTP code =]
+            # TODO - This code should probably become a POE::Kernel method,
+            # seeing as it's rather baroque and potentially useful in a number
+            # of places.
+
+COPYRIGHT AND LICENSE
+    Copyright 2008 by Apocalypse/Rocco Caputo
+
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
 

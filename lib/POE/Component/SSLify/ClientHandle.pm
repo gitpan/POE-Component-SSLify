@@ -1,16 +1,17 @@
-# Declare our package
+# $Id: ClientHandle.pm 53 2008-07-28 03:03:04Z larwan $
 package POE::Component::SSLify::ClientHandle;
 use strict; use warnings;
 
 # Initialize our version
 use vars qw( $VERSION );
-$VERSION = (qw$LastChangedRevision: 7 $)[1];
+$VERSION = (qw$LastChangedRevision: 53 $)[1];
 
 # Import the SSL death routines
 use Net::SSLeay qw( die_now die_if_ssl_error );
 
 # We inherit from ServerHandle
 use vars qw( @ISA );
+require POE::Component::SSLify::ServerHandle;
 @ISA = qw( POE::Component::SSLify::ServerHandle );
 
 # Override TIEHANDLE because we create a CTX

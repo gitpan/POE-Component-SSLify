@@ -1,10 +1,10 @@
-# Declare our package
+# $Id: ServerHandle.pm 53 2008-07-28 03:03:04Z larwan $
 package POE::Component::SSLify::ServerHandle;
 use strict; use warnings;
 
 # Initialize our version
 use vars qw( $VERSION );
-$VERSION = (qw$LastChangedRevision: 7 $)[1];
+$VERSION = (qw$LastChangedRevision: 53 $)[1];
 
 # Import the SSL death routines
 use Net::SSLeay qw( die_now die_if_ssl_error );
@@ -54,7 +54,7 @@ sub READ {
 	}
 
 	# Now, actually read the data
-	defined( my $read = Net::SSLeay::read( $self->{'ssl'}, $$len ) ) or return undef;
+	defined( my $read = Net::SSLeay::read( $self->{'ssl'}, $$len ) ) or return;
 
 	# Figure out the buffer and offset
 	my $buf_len = length( $$buf );

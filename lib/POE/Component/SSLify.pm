@@ -1,10 +1,10 @@
-# Declare our package
+# $Id: SSLify.pm 53 2008-07-28 03:03:04Z larwan $
 package POE::Component::SSLify;
 use strict; use warnings;
 
-# Initialize our version $LastChangedRevision: 7 $
+# Initialize our version $LastChangedRevision: 53 $
 use vars qw( $VERSION );
-$VERSION = '0.13';
+$VERSION = '0.14';
 
 # We need Net::SSLeay or all's a failure!
 BEGIN {
