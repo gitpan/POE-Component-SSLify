@@ -1,6 +1,6 @@
 ---
 name: POE-Component-SSLify
-version: 0.14
+version: 0.15
 author:
   - 'Apocalypse E<lt>apocal@cpan.orgE<gt>'
 abstract: SSL in the world of POE made easy
@@ -9,19 +9,19 @@ resources:
   license: http://dev.perl.org/licenses/
 requires:
   Net::SSLeay: 1.30
-  Test::More: 0
+  perl: 5.006
 dynamic_config: 0
 provides:
   POE::Component::SSLify:
     file: lib/POE/Component/SSLify.pm
-    version: 0.14
+    version: 0.15
   POE::Component::SSLify::ClientHandle:
     file: lib/POE/Component/SSLify/ClientHandle.pm
-    version: 53
+    version: 0.15
   POE::Component::SSLify::ServerHandle:
     file: lib/POE/Component/SSLify/ServerHandle.pm
-    version: 53
-generated_by: Module::Build version 0.2808
+    version: 0.15
+generated_by: Module::Build version 0.280801
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
   version: 1.2

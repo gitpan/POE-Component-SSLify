@@ -90,6 +90,19 @@ NOTES
             Some users have reported success, others failure when they tried to utilize SSLify in both roles. This
             would require more investigation, so please tread carefully if you need to use it!
 
+  Blocking mode
+            Normally, Net::SSLeay requires the socket to be in blocking mode for the initial handshake to work. However,
+            various users ( especially ASCENT, thanks! ) have reported success in setting nonblocking mode for clients.
+
+            In order to enable nonblocking mode, you need to set the subroutine "NONBLOCKING" to a true value in this
+            package.
+
+                    sub POE::Component::SSLify::NONBLOCKING { 1 }
+                    use POE::Component::SSLify;
+
+            This is a global, and an EXPERIMENTAL feature! Please, pretty please report back to me your experience with
+            this. Hopefully someday SSLify will be fully nonblocking, thanks to your help!
+
 FUNCTIONS
   Client_SSLify
             Accepts a socket, returns a brand new socket SSLified. Optionally accepts SSL
@@ -126,6 +139,16 @@ FUNCTIONS
                     $socket = Server_SSLify( $socket );
 
             NOTE: SSLify_Options must be set first!
+
+            Furthermore, you can pass in your own $ctx object if you desire. This allows you to set custom parameters
+            per-connection, for example.
+                    my $socket = shift;     # get the socket from somewhere
+                    my $ctx = Net::SSLeay::CTX_new();
+                    # set various options on $ctx as desired
+                    $socket = Server_SSLify( $socket, $ctx );
+
+            NOTE: You can use SSLify_GetCTX to modify the global, and avoid doing this on every connection if the
+            options are the same...
 
   SSLify_Options
             Accepts the location of the SSL key + certificate files and does it's job
@@ -183,9 +206,35 @@ FUNCTIONS
 EXPORT
             Stuffs all of the above functions in @EXPORT_OK so you have to request them directly
 
-BUGS
-    On Win32 platforms SSL support is pretty shaky, please help me out with
-    detailed error descriptions if it happens to you!
+    head1 SUPPORT
+
+    You can find documentation for this module with the perldoc command.
+
+        perldoc POE::Component::SSLify
+
+  Websites
+    *   AnnoCPAN: Annotated CPAN documentation
+
+        <http://annocpan.org/dist/POE-Component-SSLify>
+
+    *   CPAN Ratings
+
+        <http://cpanratings.perl.org/d/POE-Component-SSLify>
+
+    *   RT: CPAN's request tracker
+
+        <http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-SSLify>
+
+    *   Search CPAN
+
+        <http://search.cpan.org/dist/POE-Component-SSLify>
+
+  Bugs
+    Please report any bugs or feature requests to "bug-poe-component-sslify
+    at rt.cpan.org", or through the web interface at
+    <http://rt.cpan.org/NoAuth/ReportBug.html?Queue=POE-Component-SSLify>. I
+    will be notified, and then you'll automatically be notified of progress
+    on your bug as I make changes.
 
 SEE ALSO
     POE
@@ -206,7 +255,7 @@ PROPS
             # of places.
 
 COPYRIGHT AND LICENSE
-    Copyright 2008 by Apocalypse/Rocco Caputo
+    Copyright 2009 by Apocalypse/Rocco Caputo
 
     This library is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
