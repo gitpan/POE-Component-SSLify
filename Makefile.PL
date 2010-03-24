@@ -7,7 +7,7 @@ WriteMakefile
           'VERSION_FROM' => 'lib/POE/Component/SSLify.pm',
           'PREREQ_PM' => {
                            'Net::SSLeay' => '1.36',
-                           'POE' => 0,
+                           'POE' => '1.267',
                            'POE::Component::Client::TCP' => 0,
                            'POE::Component::Server::TCP' => 0
                          },

@@ -3,7 +3,7 @@ use strict; use warnings;
 
 # Initialize our version
 use vars qw( $VERSION );
-$VERSION = '0.17';
+$VERSION = '0.18';
 
 # We need Net::SSLeay or all's a failure!
 BEGIN {
@@ -26,6 +26,7 @@ BEGIN {
 		require POE::Component::SSLify::ClientHandle;
 
 		# Initialize Net::SSLeay
+		# Taken from http://search.cpan.org/~flora/Net-SSLeay-1.36/lib/Net/SSLeay.pm#Low_level_API
 		Net::SSLeay::load_error_strings();
 		Net::SSLeay::SSLeay_add_ssl_algorithms();
 		Net::SSLeay::randomize();
@@ -241,7 +242,7 @@ sub SSLify_GetSocket {
 1;
 __END__
 
-=for stopwords AnnoCPAN CPAN CPANTS Kwalitee RT SSL com diff github
+=for stopwords AnnoCPAN CPAN CPANTS Kwalitee RT SSL com diff github FreeBSD OpenSSL
 
 =head1 NAME
 
@@ -556,7 +557,7 @@ Apocalypse E<lt>apocal@cpan.orgE<gt>
 	of maintaining it :)
 
 	From the PoCo::Client::HTTP code =]
-	# TODO - This code should probably become a POE::Kernel method,
+	# This code should probably become a POE::Kernel method,
     	# seeing as it's rather baroque and potentially useful in a number
     	# of places.
 
@@ -565,7 +566,7 @@ module would still be stuck in the stone age :)
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2010 by Apocalypse/Rocco Caputo/ascent
+Copyright 2010 by Apocalypse/Rocco Caputo/Dariusz Jackowski
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
