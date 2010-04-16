@@ -9,7 +9,7 @@ build_requires:
 configure_requires:
   Module::Build: 0.36
 dynamic_config: 0
-generated_by: 'Module::Build version 0.3603'
+generated_by: 'Module::Build version 0.3607'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -18,13 +18,13 @@ name: POE-Component-SSLify
 provides:
   POE::Component::SSLify:
     file: lib/POE/Component/SSLify.pm
-    version: 0.18
+    version: 0.19
   POE::Component::SSLify::ClientHandle:
     file: lib/POE/Component/SSLify/ClientHandle.pm
-    version: 0.18
+    version: 0.19
   POE::Component::SSLify::ServerHandle:
     file: lib/POE/Component/SSLify/ServerHandle.pm
-    version: 0.18
+    version: 0.19
 requires:
   Net::SSLeay: 1.36
   perl: 5.006
@@ -33,4 +33,4 @@ resources:
   homepage: http://search.cpan.org/dist/POE-Component-SSLify
   license: http://dev.perl.org/licenses/
   repository: http://github.com/apocalypse/perl-poe-sslify
-version: 0.18
+version: 0.19
