@@ -18,13 +18,13 @@ name: POE-Component-SSLify
 provides:
   POE::Component::SSLify:
     file: lib/POE/Component/SSLify.pm
-    version: 0.19
+    version: 0.20
   POE::Component::SSLify::ClientHandle:
     file: lib/POE/Component/SSLify/ClientHandle.pm
-    version: 0.19
+    version: 0.20
   POE::Component::SSLify::ServerHandle:
     file: lib/POE/Component/SSLify/ServerHandle.pm
-    version: 0.19
+    version: 0.20
 requires:
   Net::SSLeay: 1.36
   perl: 5.006
@@ -33,4 +33,4 @@ resources:
   homepage: http://search.cpan.org/dist/POE-Component-SSLify
   license: http://dev.perl.org/licenses/
   repository: http://github.com/apocalypse/perl-poe-sslify
-version: 0.19
+version: 0.20
