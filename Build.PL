@@ -24,7 +24,7 @@ my %module_build_args = (
     'Apocalypse <APOCAL@cpan.org>'
   ],
   'dist_name' => 'POE-Component-SSLify',
-  'dist_version' => '1.000',
+  'dist_version' => '1.001',
   'license' => 'perl',
   'module_name' => 'POE::Component::SSLify',
   'recommends' => {},
@@ -32,7 +32,7 @@ my %module_build_args = (
   'requires' => {
     'Exporter' => '0',
     'IO::Handle' => '1.28',
-    'Net::SSLeay' => '1.36',
+    'Net::SSLeay' => '0',
     'Symbol' => '0',
     'perl' => '5.006',
     'vars' => '0'

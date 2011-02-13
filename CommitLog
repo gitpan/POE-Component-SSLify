@@ -1,3 +1,13 @@
+==============================
+9999-99-99 99:99:99 +0000 HEAD
+==============================
+
+  commit 1627d797b6cd2a8a42de31312f699a5e514494ae
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Sun Feb 13 11:10:05 2011 -0700
+  
+    use string eval instead of block eval, thanks CPANTesters 
+
 ===================================
 End of changes in the last 365 days
 ===================================

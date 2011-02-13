@@ -9,7 +9,7 @@
 use strict; use warnings;
 package POE::Component::SSLify::ClientHandle;
 BEGIN {
-  $POE::Component::SSLify::ClientHandle::VERSION = '1.000';
+  $POE::Component::SSLify::ClientHandle::VERSION = '1.001';
 }
 BEGIN {
   $POE::Component::SSLify::ClientHandle::AUTHORITY = 'cpan:APOCAL';
@@ -69,7 +69,7 @@ POE::Component::SSLify::ClientHandle - Client-side handle for SSLify
 
 =head1 VERSION
 
-  This document describes v1.000 of POE::Component::SSLify::ClientHandle - released February 12, 2011 as part of POE-Component-SSLify.
+  This document describes v1.001 of POE::Component::SSLify::ClientHandle - released February 13, 2011 as part of POE-Component-SSLify.
 
 =head1 DESCRIPTION
 

@@ -9,7 +9,7 @@
 use strict; use warnings;
 package POE::Component::SSLify::ServerHandle;
 BEGIN {
-  $POE::Component::SSLify::ServerHandle::VERSION = '1.000';
+  $POE::Component::SSLify::ServerHandle::VERSION = '1.001';
 }
 BEGIN {
   $POE::Component::SSLify::ServerHandle::AUTHORITY = 'cpan:APOCAL';
@@ -181,7 +181,7 @@ POE::Component::SSLify::ServerHandle - Server-side handle for SSLify
 
 =head1 VERSION
 
-  This document describes v1.000 of POE::Component::SSLify::ServerHandle - released February 12, 2011 as part of POE-Component-SSLify.
+  This document describes v1.001 of POE::Component::SSLify::ServerHandle - released February 13, 2011 as part of POE-Component-SSLify.
 
 =head1 DESCRIPTION
 
