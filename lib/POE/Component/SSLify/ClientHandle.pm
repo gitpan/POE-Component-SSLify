@@ -1,9 +1,21 @@
-package POE::Component::SSLify::ClientHandle;
+#
+# This file is part of POE-Component-SSLify
+#
+# This software is copyright (c) 2011 by Apocalypse.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
 use strict; use warnings;
+package POE::Component::SSLify::ClientHandle;
+BEGIN {
+  $POE::Component::SSLify::ClientHandle::VERSION = '1.000';
+}
+BEGIN {
+  $POE::Component::SSLify::ClientHandle::AUTHORITY = 'cpan:APOCAL';
+}
 
-# Initialize our version
-use vars qw( $VERSION );
-$VERSION = '0.20';
+# ABSTRACT: Client-side handle for SSLify
 
 # Import the SSL death routines
 use Net::SSLeay qw( die_now die_if_ssl_error );
@@ -45,18 +57,19 @@ sub TIEHANDLE {
 	return $self;
 }
 
-# End of module
 1;
 
+
 __END__
+=pod
 
 =head1 NAME
 
-POE::Component::SSLify::ClientHandle - client object for POE::Component::SSLify
+POE::Component::SSLify::ClientHandle - Client-side handle for SSLify
 
-=head1 ABSTRACT
+=head1 VERSION
 
-	See POE::Component::SSLify::ServerHandle
+  This document describes v1.000 of POE::Component::SSLify::ClientHandle - released February 12, 2011 as part of POE-Component-SSLify.
 
 =head1 DESCRIPTION
 
@@ -64,19 +77,32 @@ POE::Component::SSLify::ClientHandle - client object for POE::Component::SSLify
 
 =head1 SEE ALSO
 
+Please see those modules/websites for more information related to this module.
+
+=over 4
+
+=item *
+
 L<POE::Component::SSLify>
+
+=item *
 
 L<POE::Component::SSLify::ServerHandle>
 
+=back
+
 =head1 AUTHOR
 
-Apocalypse E<lt>apocal@cpan.orgE<gt>
+Apocalypse <APOCAL@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2010 by Apocalypse
+This software is copyright (c) 2011 by Apocalypse.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+The full text of the license can be found in the LICENSE file included with this distribution.
 
 =cut
+

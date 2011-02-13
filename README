@@ -1,6 +1,9 @@
 NAME
     POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
+VERSION
+      This document describes v1.000 of POE::Component::SSLify - released February 12, 2011 as part of POE-Component-SSLify.
+
 SYNOPSIS
             # CLIENT-side usage
 
@@ -31,7 +34,7 @@ SYNOPSIS
 
             # SERVER-side usage
 
-            # !!! Make sure you have a public key + certificate generated via Net::SSLeay's makecert.pl
+            # !!! Make sure you have a public key + certificate
             # excellent howto: http://www.akadia.com/services/ssh_test_certificate.html
 
             # Import the module
@@ -62,9 +65,6 @@ SYNOPSIS
 
             # Use it as you wish...
             # End of example
-
-ABSTRACT
-            Makes SSL use in POE a breeze!
 
 DESCRIPTION
     This component represents the standard way to do SSL in POE.
@@ -103,12 +103,18 @@ NOTES
     please report back to me so I can update this doc!
 
    Net::SSLeay::renegotiate
-    This function has been tested ( it's in t/3_renegotiate.t ) but it
+    This function has been tested ( it's in "t/2_renegotiate.t" ) but it
     doesn't work on FreeBSD! I tracked it down to this security advisory:
     <http://security.freebsd.org/advisories/FreeBSD-SA-09:15.ssl.asc> which
     explains it in detail. The test will skip this function if it detects
     that you're on a broken system. However, if you have the updated OpenSSL
     library that fixes this you can use it.
+
+   In-Situ sslification
+    You can have a normal plaintext socket, and convert it to SSL anytime.
+    Just keep in mind that the client and the server must agree to sslify at
+    the same time, or they will be waiting on each other forever! See
+    "t/3_insitu.t" for an example of how this works.
 
 FUNCTIONS
   Client_SSLify
@@ -227,15 +233,32 @@ FUNCTIONS
 EXPORT
             Stuffs all of the above functions in @EXPORT_OK so you have to request them directly
 
+SEE ALSO
+    Please see those modules/websites for more information related to this
+    module.
+
+    *   POE
+
+    *   Net::SSLeay
+
 SUPPORT
+  Perldoc
     You can find documentation for this module with the perldoc command.
 
-            perldoc POE::Component::SSLify
+      perldoc POE::Component::SSLify
 
   Websites
+    The following websites have more information about this module, and may
+    be of help to you. As always, in addition to those websites please use
+    your favorite search engine to discover more resources.
+
     *   Search CPAN
 
         <http://search.cpan.org/dist/POE-Component-SSLify>
+
+    *   RT: CPAN's Bug Tracker
+
+        <http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-SSLify>
 
     *   AnnoCPAN: Annotated CPAN documentation
 
@@ -249,10 +272,6 @@ SUPPORT
 
         <http://cpanforum.com/dist/POE-Component-SSLify>
 
-    *   RT: CPAN's Request Tracker
-
-        <http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-SSLify>
-
     *   CPANTS Kwalitee
 
         <http://cpants.perl.org/dist/overview/POE-Component-SSLify>
@@ -265,30 +284,54 @@ SUPPORT
 
         <http://matrix.cpantesters.org/?dist=POE-Component-SSLify>
 
-    *   Git Source Code Repository
+  Email
+    You can email the author of this module at "APOCAL at cpan.org" asking
+    for help with any problems you have.
 
-        This code is currently hosted on github.com under the account
-        "apocalypse". Please feel free to browse it and pull from it, or
-        whatever. If you want to contribute patches, please send me a diff
-        or prod me to pull from your repository :)
+  Internet Relay Chat
+    You can get live help by using IRC ( Internet Relay Chat ). If you don't
+    know what IRC is, please read this excellent guide:
+    <http://en.wikipedia.org/wiki/Internet_Relay_Chat>. Please be courteous
+    and patient when talking to us, as we might be busy or sleeping! You can
+    join those networks/channels and get help:
 
-        <http://github.com/apocalypse/perl-poe-sslify>
+    *   irc.perl.org
 
-  Bugs
-    Please report any bugs or feature requests to "bug-poe-component-sslify
-    at rt.cpan.org", or through the web interface at
-    <http://rt.cpan.org/NoAuth/ReportBug.html?Queue=POE-Component-SSLify>. I
-    will be notified, and then you'll automatically be notified of progress
-    on your bug as I make changes.
+        You can connect to the server at 'irc.perl.org' and join this
+        channel: #perl-help then talk to this person for help: Apocalypse.
 
-SEE ALSO
-    POE
+    *   irc.freenode.net
 
-    Net::SSLeay
+        You can connect to the server at 'irc.freenode.net' and join this
+        channel: #perl then talk to this person for help: Apocal.
+
+    *   irc.efnet.org
+
+        You can connect to the server at 'irc.efnet.org' and join this
+        channel: #perl then talk to this person for help: Ap0cal.
+
+  Bugs / Feature Requests
+    Please report any bugs or feature requests by email to
+    "bug-poe-component-sslify at rt.cpan.org", or through the web interface
+    at
+    <http://rt.cpan.org/NoAuth/ReportBug.html?Queue=POE-Component-SSLify>.
+    You will be automatically notified of any progress on the request by the
+    system.
+
+  Source Code
+    The code is open to the world, and available for you to hack on. Please
+    feel free to browse it and play with it, or whatever. If you want to
+    contribute patches, please send me a diff or prod me to pull from your
+    repository :)
+
+    <http://github.com/apocalypse/perl-poe-sslify>
+
+      git clone git://github.com/apocalypse/perl-poe-sslify.git
 
 AUTHOR
-    Apocalypse <apocal@cpan.org>
+    Apocalypse <APOCAL@cpan.org>
 
+ACKNOWLEDGEMENTS
             Original code is entirely Rocco Caputo ( Creator of POE ) -> I simply
             packaged up the code into something everyone could use and accepted the burden
             of maintaining it :)
@@ -302,11 +345,11 @@ AUTHOR
     work this module would still be stuck in the stone age :)
 
 COPYRIGHT AND LICENSE
-    Copyright 2010 by Apocalypse/Rocco Caputo/Dariusz Jackowski
+    This software is copyright (c) 2011 by Apocalypse.
 
-    This library is free software; you can redistribute it and/or modify it
-    under the same terms as Perl itself.
+    This is free software; you can redistribute it and/or modify it under
+    the same terms as the Perl 5 programming language system itself.
 
     The full text of the license can be found in the LICENSE file included
-    with this module.
+    with this distribution.
 

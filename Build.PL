@@ -1,49 +1,46 @@
-# Build.PL
-use strict; use warnings;
-use Module::Build;
 
-my $build = Module::Build->new(
-	# look up Module::Build::API for the info!
-	'dynamic_config'	=> 0,
-	'module_name'		=> 'POE::Component::SSLify',
-	'license'		=> 'perl',
+use strict;
+use warnings;
 
-	'dist_abstract'		=> 'SSL in the world of POE made easy',
-	'dist_author'		=> 'Apocalypse <APOCAL@cpan.org>',
+use Module::Build 0.3601;
 
-	'create_packlist'	=> 1,
-	'create_makefile_pl'	=> 'traditional',
-	'create_readme'		=> 1,
-	'create_license'	=> 1,
-	'sign'			=> 0,
 
-	'test_files'		=> 't/*.t',
-
-	'requires'		=> {
-		# Networking
-		'Net::SSLeay'	=> '1.36',
-
-		# minimum perl version
-		'perl'		=> '5.006',
-	},
-
-	'build_requires'	=> {
-		# For the t/simple.t test
-		'POE'				=> '1.267',
-		'POE::Component::Client::TCP'	=> 0,
-		'POE::Component::Server::TCP'	=> 0,
-	},
-
-	# include the standard stuff in META.yml
-	'meta_merge'	=> {
-		'resources'	=> {
-			'license'	=> 'http://dev.perl.org/licenses/',
-			'homepage'	=> 'http://search.cpan.org/dist/POE-Component-SSLify',
-			'bugtracker'	=> 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-SSLify',
-			'repository'	=> 'http://github.com/apocalypse/perl-poe-sslify',
-		},
-	},
+my %module_build_args = (
+  'build_requires' => {
+    'File::Find' => '0',
+    'File::Temp' => '0',
+    'Module::Build' => '0.3601',
+    'POE' => '1.267',
+    'POE::Component::Client::TCP' => '0',
+    'POE::Component::Server::TCP' => '0',
+    'Socket' => '0',
+    'Test::More' => '0.88'
+  },
+  'configure_requires' => {
+    'Module::Build' => '0.3601'
+  },
+  'dist_abstract' => 'Makes using SSL in the world of POE easy!',
+  'dist_author' => [
+    'Apocalypse <APOCAL@cpan.org>'
+  ],
+  'dist_name' => 'POE-Component-SSLify',
+  'dist_version' => '1.000',
+  'license' => 'perl',
+  'module_name' => 'POE::Component::SSLify',
+  'recommends' => {},
+  'recursive_test_files' => 1,
+  'requires' => {
+    'Exporter' => '0',
+    'IO::Handle' => '1.28',
+    'Net::SSLeay' => '1.36',
+    'Symbol' => '0',
+    'perl' => '5.006',
+    'vars' => '0'
+  },
+  'script_files' => []
 );
 
-# all done!
+
+my $build = Module::Build->new(%module_build_args);
+
 $build->create_build_script;

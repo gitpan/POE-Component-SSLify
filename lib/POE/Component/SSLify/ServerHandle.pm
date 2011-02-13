@@ -1,9 +1,21 @@
-package POE::Component::SSLify::ServerHandle;
+#
+# This file is part of POE-Component-SSLify
+#
+# This software is copyright (c) 2011 by Apocalypse.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
 use strict; use warnings;
+package POE::Component::SSLify::ServerHandle;
+BEGIN {
+  $POE::Component::SSLify::ServerHandle::VERSION = '1.000';
+}
+BEGIN {
+  $POE::Component::SSLify::ServerHandle::AUTHORITY = 'cpan:APOCAL';
+}
 
-# Initialize our version
-use vars qw( $VERSION );
-$VERSION = '0.20';
+# ABSTRACT: Server-side handle for SSLify
 
 # Import the SSL death routines
 use Net::SSLeay qw( die_now die_if_ssl_error );
@@ -157,18 +169,19 @@ sub PRINT {
 	die 'Not Implemented';
 }
 
-# End of module
 1;
 
+
 __END__
+=pod
 
 =head1 NAME
 
-POE::Component::SSLify::ServerHandle - server object for POE::Component::SSLify
+POE::Component::SSLify::ServerHandle - Server-side handle for SSLify
 
-=head1 ABSTRACT
+=head1 VERSION
 
-	See POE::Component::SSLify
+  This document describes v1.000 of POE::Component::SSLify::ServerHandle - released February 12, 2011 as part of POE-Component-SSLify.
 
 =head1 DESCRIPTION
 
@@ -184,17 +197,28 @@ POE::Component::SSLify::ServerHandle - server object for POE::Component::SSLify
 
 =head1 SEE ALSO
 
+Please see those modules/websites for more information related to this module.
+
+=over 4
+
+=item *
+
 L<POE::Component::SSLify>
+
+=back
 
 =head1 AUTHOR
 
-Apocalypse E<lt>apocal@cpan.orgE<gt>
+Apocalypse <APOCAL@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2010 by Apocalypse
+This software is copyright (c) 2011 by Apocalypse.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+The full text of the license can be found in the LICENSE file included with this distribution.
 
 =cut
+

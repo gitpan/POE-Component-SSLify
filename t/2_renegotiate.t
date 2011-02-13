@@ -1,12 +1,25 @@
 #!/usr/bin/perl
+#
+# This file is part of POE-Component-SSLify
+#
+# This software is copyright (c) 2011 by Apocalypse.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
+use strict; use warnings;
 
 # Thanks to ASCENT for this test!
+
+# This test adds renegotiation to the connection
+# Since this is not supported on all platforms, it's marked TODO and adds custom logic
+# to make sure it doesn't FAIL if it's not supported.
 
 use strict; use warnings;
 
 my $numtests;
 BEGIN {
-	$numtests = 16;
+	$numtests = 23;
 
 	eval "use Test::NoWarnings";
 	if ( ! $@ ) {
@@ -18,16 +31,17 @@ BEGIN {
 
 use Test::More tests => $numtests;
 
-use POE;
+use POE 1.267;
 use POE::Component::Client::TCP;
 use POE::Component::Server::TCP;
-use POE::Component::SSLify qw/Client_SSLify Server_SSLify SSLify_Options SSLify_GetCipher SSLify_ContextCreate/;
+use POE::Component::SSLify qw/Client_SSLify Server_SSLify SSLify_Options SSLify_GetCipher SSLify_ContextCreate SSLify_GetSocket/;
 use Net::SSLeay qw/ERROR_WANT_READ ERROR_WANT_WRITE/;
-use POSIX qw/F_GETFL F_SETFL O_NONBLOCK EAGAIN EWOULDBLOCK/;
 
 # TODO rewrite this to use Test::POE::Server::TCP and stuff :)
 
 my $port;
+my $server_ping2;
+my $client_ping2;
 
 POE::Component::Server::TCP->new
 (
@@ -59,8 +73,8 @@ POE::Component::Server::TCP->new
 		ok(!$@, "SERVER: Server_SSLify $@");
 		ok(1, 'SERVER: SSLify_GetCipher: '. SSLify_GetCipher($socket));
 
-		my $flags = fcntl($_[ARG0], F_GETFL, 0);
-		ok($flags & O_NONBLOCK, 'SERVER: SSLified socket is non-blocking?');
+		# We pray that IO::Handle is sane...
+		ok( SSLify_GetSocket( $socket )->blocking == 0, 'SERVER: SSLified socket is non-blocking?');
 
 		return ($socket);
 	},
@@ -76,6 +90,12 @@ POE::Component::Server::TCP->new
 		{
 			ok(1, "SERVER: recv: $request");
 			$heap->{client}->put("pong");
+		}
+		elsif ($request eq 'ping2')
+		{
+			ok(1, "SERVER: recv: $request");
+			$server_ping2++;
+			$heap->{client}->put("pong2");
 		}
 	},
 	ClientError	=> sub
@@ -114,8 +134,8 @@ POE::Component::Client::TCP->new
 		ok(!$@, "CLIENT: Client_SSLify $@");
 		ok(1, 'CLIENT: SSLify_GetCipher: '. SSLify_GetCipher($socket));
 
-		my $flags = fcntl($_[ARG0], F_GETFL, 0);
-		ok($flags & O_NONBLOCK, 'CLIENT: SSLified socket is non-blocking?');
+		# We pray that IO::Handle is sane...
+		ok( SSLify_GetSocket( $socket )->blocking == 0, 'CLIENT: SSLified socket is non-blocking?');
 
 		return ($socket);
 	},
@@ -130,6 +150,32 @@ POE::Component::Client::TCP->new
 		if ($line eq 'pong')
 		{
 			ok(1, "CLIENT: recv: $line");
+
+			# Skip 2 Net::SSLeay::renegotiate() tests on FreeBSD because of
+			# http://security.freebsd.org/advisories/FreeBSD-SA-09:15.ssl.asc
+			TODO: {
+				local $TODO = "Net::SSLeay::renegotiate() does not work on all platforms";
+
+				## Force SSL renegotiation
+				my $ssl = tied(*{$heap->{server}->get_output_handle})->{ssl};
+				my $reneg_num = Net::SSLeay::num_renegotiations($ssl);
+
+				ok(1 == Net::SSLeay::renegotiate($ssl), 'CLIENT: SSL renegotiation');
+				my $handshake = Net::SSLeay::do_handshake($ssl);
+				my $err = Net::SSLeay::get_error($ssl, $handshake);
+
+				## 1 == Successful handshake, ERROR_WANT_(READ|WRITE) == non-blocking.
+				ok($handshake == 1 || $err == ERROR_WANT_READ || $err == ERROR_WANT_WRITE, 'CLIENT: SSL handshake');
+				ok($reneg_num < Net::SSLeay::num_renegotiations($ssl), 'CLIENT: Increased number of negotiations');
+			}
+
+			$heap->{server}->put('ping2');
+		}
+
+		elsif ($line eq 'pong2')
+		{
+			ok(1, "CLIENT: recv: $line");
+			$client_ping2++;
 			$kernel->yield('shutdown');
 		}
 	},
@@ -151,6 +197,22 @@ POE::Component::Client::TCP->new
 );
 
 $poe_kernel->run();
+
+# Add extra pass() to make the test harness happy if renegotiate did not work
+if ( ! $server_ping2 ) {
+	local $TODO = "Net::SSLeay::renegotiate() does not work on all platforms";
+	fail( "SERVER: Failed SSL renegotiation" );
+}
+if ( ! $client_ping2 ) {
+	local $TODO = "Net::SSLeay::renegotiate() does not work on all platforms";
+	fail( "CLIENT: Failed SSL renegotiation" );
+}
+if ( ! $server_ping2 or ! $client_ping2 ) {
+	diag( "WARNING: Your platform/SSL library does not support renegotiation of the SSL socket." );
+	diag( "This test harness detected that trying to renegotiate resulted in a disconnected socket." );
+	diag( "POE::Component::SSLify will work on your system, but please do not attempt a SSL renegotiate." );
+	diag( "Please talk with the author to figure out if this issue can be worked around, thank you!" );
+}
 
 pass( 'shut down sanely' );
 

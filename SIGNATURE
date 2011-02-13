@@ -1,0 +1,48 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.66.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 fefda95b8791cf4f2c0ee5e04fbef85863bd0b43 Build.PL
+SHA1 e33401b9a2d86bef7401d8ad4419a8030cad26fd Changes
+SHA1 f7229c4d69aace7b238ecf706dcd9ee588bcd6d3 CommitLog
+SHA1 e3edc44697d1770c65fec99f6ebdb6ea55fb3050 INSTALL
+SHA1 263360e99a0de4d587fedefe1a919dcf61af1d10 LICENSE
+SHA1 9b47f2f0b927dcb7cab2cc1f7daa62c5b50c55f8 MANIFEST
+SHA1 9dfc07c5655b958e800189837f3ddd37ca050bfe MANIFEST.SKIP
+SHA1 be49c960442a5588bc5e4a45f16f64c078202154 META.json
+SHA1 17cc6f0815cabaee055f2a2ba9799cdee73e5eb7 META.yml
+SHA1 06c2a0ea38a60274cac316147482b1869c1a60ff Makefile.PL
+SHA1 34093867b7dab8ec70bb6edac2da4c5a35ed7eaf README
+SHA1 41a5da1356107d097f6bbf72c62ee4da83e4119f dist.ini
+SHA1 96decb1c51052f9b024b6d069e428b4ccc19e909 examples/client.pl
+SHA1 d8f9b44df461cdcf6cbd7cffd79a9d49aade3947 examples/server.pl
+SHA1 c4a936c75d1d566e936dfb1776c9a01ea244c618 examples/serverclient.pl
+SHA1 01b4c0ba6ea404583e0f8b067019e7142346fdf8 lib/POE/Component/SSLify.pm
+SHA1 809f0bf64c199c4c5bdbb85af4f9486356b66f53 lib/POE/Component/SSLify/ClientHandle.pm
+SHA1 631b1b5604edceaabcc0fe9c53bb8f2c47f9eca2 lib/POE/Component/SSLify/ServerHandle.pm
+SHA1 59afa28f138a14b956443f915d60a891d5b306b8 mylib/example.crt
+SHA1 f2ba02d28cfb207e0a86be7cb4f3c570f257bf93 mylib/example.key
+SHA1 fd48b12e3df15fb55695e7d1b4ee95dc3c0cd766 t/00-compile.t
+SHA1 f3cbbe4330b592590a325183b69b27b76c45b80a t/000-report-versions-tiny.t
+SHA1 74b0f9cbea1b18ae9be6f55b939c213e776d674a t/1_simple.t
+SHA1 c625a70ac63ea5d6a0fabd07130f1d3a905b1933 t/2_renegotiate.t
+SHA1 034a72d7403a58a756c8cbd2b1ce15afd9acf333 t/3_insitu.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+
+iEYEARECAAYFAk1XIH4ACgkQGfr7vsGKgxxXqACgwKbq/3AuDo7rPI6kgUrGmeRR
+LG4AoKvDcUbRcQRUiL4Qrct2jGoLe7wk
+=T720
+-----END PGP SIGNATURE-----

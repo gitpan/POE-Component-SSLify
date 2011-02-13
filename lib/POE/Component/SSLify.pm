@@ -1,17 +1,27 @@
-package POE::Component::SSLify;
+#
+# This file is part of POE-Component-SSLify
+#
+# This software is copyright (c) 2011 by Apocalypse.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
 use strict; use warnings;
+package POE::Component::SSLify;
+BEGIN {
+  $POE::Component::SSLify::VERSION = '1.000';
+}
+BEGIN {
+  $POE::Component::SSLify::AUTHORITY = 'cpan:APOCAL';
+}
 
-# Initialize our version
-use vars qw( $VERSION );
-$VERSION = '0.20';
+# ABSTRACT: Makes using SSL in the world of POE easy!
 
 # We need Net::SSLeay or all's a failure!
 BEGIN {
 	eval {
-		require Net::SSLeay;
-
 		# We need >= 1.36 because it contains a lot of important fixes
-		Net::SSLeay->import( 1.36 );
+		use Net::SSLeay 1.36 qw( die_now die_if_ssl_error );
 	};
 
 	# Check for errors...
@@ -19,7 +29,7 @@ BEGIN {
 		# Oh boy!
 		die $@;
 	} else {
-		# Finally, load our subclass :)
+		# Finally, load our subclasses :)
 		# ClientHandle isa ServerHandle so it will get loaded automatically
 		require POE::Component::SSLify::ClientHandle;
 
@@ -39,68 +49,13 @@ use vars qw( @ISA @EXPORT_OK );
 
 # Bring in some socket-related stuff
 use Symbol qw( gensym );
-use POSIX qw( F_GETFL F_SETFL O_NONBLOCK EAGAIN EWOULDBLOCK );
 
-# We need the server-side stuff
-use Net::SSLeay qw( die_now die_if_ssl_error );
+# we need IO 1.24 for it's win32 fixes but it includes IO::Handle 1.27_02 which is dev...
+# unfortunately we have to jump to IO 1.25 which includes IO::Handle 1.28... argh!
+use IO::Handle 1.28;
 
 # The server-side CTX stuff
 my $ctx = undef;
-
-# Helper sub to set nonblocking on a handle
-sub _NonBlocking {
-	my $socket = shift;
-
-	# ActiveState Perl 5.8.0 dislikes the Win32-specific code to make
-	# a socket blocking, so we use IO::Handle's blocking(0) method.
-	# Perl 5.005_03 doesn't like blocking(), so we only use it in
-	# 5.8.0 and beyond.
-	if ( $] >= 5.008 and $^O eq 'MSWin32' ) {
-		# TODO investigate this?
-#		<kmx> kthakore: Apocalypse: FYI - as regards no-blocking socket dark magic commited to FB while ago - IO::Socket 1.24 (=May/2009) and later supports on Win32 simply $socket->blocking(0);
-#		<Apocalypse> kmx: Ah didn't know that - maybe I can use that :)
-#		<kmx> Apocalypse: I uderstand that used workaround is from pre IO::Socket 1.24 times
-#		<Apocalypse> Ah, my code already did that eh
-#		<Apocalypse> if ( $] >= 5.008 and $^O eq 'MSWin32' ) {
-#		<Apocalypse> But maybe 5.008 check isn't enough?
-#		<kmx> Apocalypse: You'd better check version of IO - see changelog http://cpansearch.perl.org/src/GBARR/IO-1.25/ChangeLog
-#		<Apocalypse> Hmm yeah
-#		<Apocalypse>   * Make non-blocking mode work on Windows in IO::Socket::INET
-#		<kmx> Apocalypse: exactly
-#		<Apocalypse> Thanks for the tip! I'll go and add a TODO to the sslify code to investigate that :)
-
-
-		# From IO::Handle POD
-		# If an error occurs blocking will return undef and $! will be set.
-		if ( ! $socket->blocking( 0 ) ) {
-			die "Unable to set nonblocking mode on socket: $!";
-		}
-	} else {
-		# Make the handle nonblocking, the POSIX way.
-		if ( $^O ne 'MSWin32' ) {
-			# Get the old flags
-			my $flags = fcntl( $socket, F_GETFL, 0 ) or die "fcntl( $socket, F_GETFL, 0 ) fails: $!";
-
-			# Okay, we patiently wait until the socket turns nonblocking mode
-			until( fcntl( $socket, F_SETFL, $flags | O_NONBLOCK ) ) {
-				# What was the error?
-				if ( ! ( $! == EAGAIN or $! == EWOULDBLOCK ) ) {
-					# Fatal error...
-					die "fcntl( $socket, FSETFL, etc ) fails: $!";
-				}
-			}
-		} else {
-			# Darned MSWin32 way...
-			# Do some ioctl magic here
-			# 126 is FIONBIO ( some docs say 0x7F << 16 )
-			my $flag = "1";
-			ioctl( $socket, 0x80000000 | ( 4 << 16 ) | ( ord( 'f' ) << 8 ) | 126, $flag ) or die "ioctl( $socket, FIONBIO, $flag ) fails: $!";
-		}
-	}
-
-	# All done!
-	return $socket;
-}
 
 # Okay, the main routine here!
 sub Client_SSLify {
@@ -112,8 +67,11 @@ sub Client_SSLify {
 		die "Did not get a defined socket";
 	}
 
-	# Set non-blocking
-	$socket = _NonBlocking( $socket );
+	# From IO::Handle POD
+	# If an error occurs blocking will return undef and $! will be set.
+	if ( ! defined $socket->blocking( 0 ) ) {
+		die "Unable to set nonblocking mode on socket: $!";
+	}
 
 	# Now, we create the new socket and bind it to our subclass of Net::SSLeay::Handle
 	my $newsock = gensym();
@@ -139,8 +97,11 @@ sub Server_SSLify {
 		die 'Please do SSLify_Options() first ( or pass in a $ctx object )';
 	}
 
-	# Set non-blocking
-	$socket = _NonBlocking( $socket );
+	# From IO::Handle POD
+	# If an error occurs blocking will return undef and $! will be set.
+	if ( ! defined $socket->blocking( 0 ) ) {
+		die "Unable to set nonblocking mode on socket: $!";
+	}
 
 	# Now, we create the new socket and bind it to our subclass of Net::SSLeay::Handle
 	my $newsock = gensym();
@@ -250,15 +211,19 @@ sub SSLify_GetSocket {
 	return tied( *$sock )->{'socket'};
 }
 
-# End of module
 1;
-__END__
 
-=for stopwords AnnoCPAN CPAN CPANTS Kwalitee RT SSL com diff github FreeBSD OpenSSL
+
+__END__
+=pod
 
 =head1 NAME
 
 POE::Component::SSLify - Makes using SSL in the world of POE easy!
+
+=head1 VERSION
+
+  This document describes v1.000 of POE::Component::SSLify - released February 12, 2011 as part of POE-Component-SSLify.
 
 =head1 SYNOPSIS
 
@@ -291,7 +256,7 @@ POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
 	# SERVER-side usage
 
-	# !!! Make sure you have a public key + certificate generated via Net::SSLeay's makecert.pl
+	# !!! Make sure you have a public key + certificate
 	# excellent howto: http://www.akadia.com/services/ssh_test_certificate.html
 
 	# Import the module
@@ -322,10 +287,6 @@ POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
 	# Use it as you wish...
 	# End of example
-
-=head1 ABSTRACT
-
-	Makes SSL use in POE a breeze!
 
 =head1 DESCRIPTION
 
@@ -366,9 +327,14 @@ possible function against SSLify, so use them carefully! If you have success, pl
 
 =head3 Net::SSLeay::renegotiate
 
-This function has been tested ( it's in t/3_renegotiate.t ) but it doesn't work on FreeBSD! I tracked it down to this security advisory:
+This function has been tested ( it's in C<t/2_renegotiate.t> ) but it doesn't work on FreeBSD! I tracked it down to this security advisory:
 L<http://security.freebsd.org/advisories/FreeBSD-SA-09:15.ssl.asc> which explains it in detail. The test will skip this function
 if it detects that you're on a broken system. However, if you have the updated OpenSSL library that fixes this you can use it.
+
+=head3 In-Situ sslification
+
+You can have a normal plaintext socket, and convert it to SSL anytime. Just keep in mind that the client and the server must agree to sslify
+at the same time, or they will be waiting on each other forever! See C<t/3_insitu.t> for an example of how this works.
 
 =head1 FUNCTIONS
 
@@ -496,73 +462,143 @@ if it detects that you're on a broken system. However, if you have the updated O
 
 	Stuffs all of the above functions in @EXPORT_OK so you have to request them directly
 
-=head1 SUPPORT
+=head1 SEE ALSO
 
-You can find documentation for this module with the perldoc command.
-
-	perldoc POE::Component::SSLify
-
-=head2 Websites
+Please see those modules/websites for more information related to this module.
 
 =over 4
 
-=item * Search CPAN
+=item *
+
+L<POE>
+
+=item *
+
+L<Net::SSLeay>
+
+=back
+
+=for :stopwords cpan testmatrix url annocpan anno bugtracker rt cpants kwalitee diff irc mailto metadata placeholders
+
+=head1 SUPPORT
+
+=head2 Perldoc
+
+You can find documentation for this module with the perldoc command.
+
+  perldoc POE::Component::SSLify
+
+=head2 Websites
+
+The following websites have more information about this module, and may be of help to you. As always,
+in addition to those websites please use your favorite search engine to discover more resources.
+
+=over 4
+
+=item *
+
+Search CPAN
 
 L<http://search.cpan.org/dist/POE-Component-SSLify>
 
-=item * AnnoCPAN: Annotated CPAN documentation
+=item *
 
-L<http://annocpan.org/dist/POE-Component-SSLify>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/POE-Component-SSLify>
-
-=item * CPAN Forum
-
-L<http://cpanforum.com/dist/POE-Component-SSLify>
-
-=item * RT: CPAN's Request Tracker
+RT: CPAN's Bug Tracker
 
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-SSLify>
 
-=item * CPANTS Kwalitee
+=item *
+
+AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/POE-Component-SSLify>
+
+=item *
+
+CPAN Ratings
+
+L<http://cpanratings.perl.org/d/POE-Component-SSLify>
+
+=item *
+
+CPAN Forum
+
+L<http://cpanforum.com/dist/POE-Component-SSLify>
+
+=item *
+
+CPANTS Kwalitee
 
 L<http://cpants.perl.org/dist/overview/POE-Component-SSLify>
 
-=item * CPAN Testers Results
+=item *
+
+CPAN Testers Results
 
 L<http://cpantesters.org/distro/P/POE-Component-SSLify.html>
 
-=item * CPAN Testers Matrix
+=item *
+
+CPAN Testers Matrix
 
 L<http://matrix.cpantesters.org/?dist=POE-Component-SSLify>
 
-=item * Git Source Code Repository
+=back
 
-This code is currently hosted on github.com under the account "apocalypse". Please feel free to browse it
-and pull from it, or whatever. If you want to contribute patches, please send me a diff or prod me to pull
+=head2 Email
+
+You can email the author of this module at C<APOCAL at cpan.org> asking for help with any problems you have.
+
+=head2 Internet Relay Chat
+
+You can get live help by using IRC ( Internet Relay Chat ). If you don't know what IRC is,
+please read this excellent guide: L<http://en.wikipedia.org/wiki/Internet_Relay_Chat>. Please
+be courteous and patient when talking to us, as we might be busy or sleeping! You can join
+those networks/channels and get help:
+
+=over 4
+
+=item *
+
+irc.perl.org
+
+You can connect to the server at 'irc.perl.org' and join this channel: #perl-help then talk to this person for help: Apocalypse.
+
+=item *
+
+irc.freenode.net
+
+You can connect to the server at 'irc.freenode.net' and join this channel: #perl then talk to this person for help: Apocal.
+
+=item *
+
+irc.efnet.org
+
+You can connect to the server at 'irc.efnet.org' and join this channel: #perl then talk to this person for help: Ap0cal.
+
+=back
+
+=head2 Bugs / Feature Requests
+
+Please report any bugs or feature requests by email to C<bug-poe-component-sslify at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=POE-Component-SSLify>. You will be automatically notified of any
+progress on the request by the system.
+
+=head2 Source Code
+
+The code is open to the world, and available for you to hack on. Please feel free to browse it and play
+with it, or whatever. If you want to contribute patches, please send me a diff or prod me to pull
 from your repository :)
 
 L<http://github.com/apocalypse/perl-poe-sslify>
 
-=back
-
-=head2 Bugs
-
-Please report any bugs or feature requests to C<bug-poe-component-sslify at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=POE-Component-SSLify>.  I will be
-notified, and then you'll automatically be notified of progress on your bug as I make changes.
-
-=head1 SEE ALSO
-
-L<POE>
-
-L<Net::SSLeay>
+  git clone git://github.com/apocalypse/perl-poe-sslify.git
 
 =head1 AUTHOR
 
-Apocalypse E<lt>apocal@cpan.orgE<gt>
+Apocalypse <APOCAL@cpan.org>
+
+=head1 ACKNOWLEDGEMENTS
 
 	Original code is entirely Rocco Caputo ( Creator of POE ) -> I simply
 	packaged up the code into something everyone could use and accepted the burden
@@ -578,11 +614,12 @@ module would still be stuck in the stone age :)
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2010 by Apocalypse/Rocco Caputo/Dariusz Jackowski
+This software is copyright (c) 2011 by Apocalypse.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-The full text of the license can be found in the LICENSE file included with this module.
+The full text of the license can be found in the LICENSE file included with this distribution.
 
 =cut
+
