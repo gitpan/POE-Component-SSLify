@@ -2,7 +2,7 @@ NAME
     POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
 VERSION
-      This document describes v1.001 of POE::Component::SSLify - released February 13, 2011 as part of POE-Component-SSLify.
+      This document describes v1.002 of POE::Component::SSLify - released February 19, 2011 as part of POE-Component-SSLify.
 
 SYNOPSIS
             # CLIENT-side usage
@@ -10,11 +10,11 @@ SYNOPSIS
             # Import the module
             use POE::Component::SSLify qw( Client_SSLify );
 
-            # Create a normal SocketFactory wheel or something
+            # Create a normal SocketFactory wheel and connect to a SSL-enabled server
             my $factory = POE::Wheel::SocketFactory->new;
 
             # Time passes, SocketFactory gives you a socket when it connects in SuccessEvent
-            # Converts the socket into a SSL socket POE can communicate with
+            # Convert the socket into a SSL socket POE can communicate with
             my $socket = shift;
             eval { $socket = Client_SSLify( $socket ) };
             if ( $@ ) {
@@ -26,9 +26,6 @@ SYNOPSIS
                     Handle  =>      $socket,
                     # other options as usual
             );
-
-            # Use it as you wish...
-            # End of example
 
             # --------------------------------------------------------------------------- #
 
@@ -46,11 +43,11 @@ SYNOPSIS
                     # Unable to load key or certificate file...
             }
 
-            # Create a normal SocketFactory wheel or something
+            # Create a normal SocketFactory wheel to listen for connections
             my $factory = POE::Wheel::SocketFactory->new;
 
             # Time passes, SocketFactory gives you a socket when it gets a connection in SuccessEvent
-            # Converts the socket into a SSL socket POE can communicate with
+            # Convert the socket into a SSL socket POE can communicate with
             my $socket = shift;
             eval { $socket = Server_SSLify( $socket ) };
             if ( $@ ) {
@@ -63,58 +60,8 @@ SYNOPSIS
                     # other options as usual
             );
 
-            # Use it as you wish...
-            # End of example
-
 DESCRIPTION
     This component represents the standard way to do SSL in POE.
-
-NOTES
-  Socket methods doesn't work
-    The new socket this module gives you actually is some tied socket magic,
-    so you cannot do stuff like getpeername() or getsockname(). The only way
-    to do it is to use SSLify_GetSocket and then operate on the socket it
-    returns.
-
-  Dying everywhere...
-    This module will die() if Net::SSLeay could not be loaded or it is not
-    the version we want. So, it is recommended that you check for errors and
-    not use SSL, like so:
-
-            eval { use POE::Component::SSLify };
-            if ( $@ ) {
-                    $sslavailable = 0;
-            } else {
-                    $sslavailable = 1;
-            }
-
-            # Make socket SSL!
-            if ( $sslavailable ) {
-                    eval { $socket = POE::Component::SSLify::Client_SSLify( $socket ) };
-                    if ( $@ ) {
-                            # Unable to SSLify the socket...
-                    }
-            }
-
-  OpenSSL functions
-    Theoretically you can do anything that Net::SSLeay exports from the
-    OpenSSL libs on the socket. However, I have not tested every possible
-    function against SSLify, so use them carefully! If you have success,
-    please report back to me so I can update this doc!
-
-   Net::SSLeay::renegotiate
-    This function has been tested ( it's in "t/2_renegotiate.t" ) but it
-    doesn't work on FreeBSD! I tracked it down to this security advisory:
-    <http://security.freebsd.org/advisories/FreeBSD-SA-09:15.ssl.asc> which
-    explains it in detail. The test will skip this function if it detects
-    that you're on a broken system. However, if you have the updated OpenSSL
-    library that fixes this you can use it.
-
-   In-Situ sslification
-    You can have a normal plaintext socket, and convert it to SSL anytime.
-    Just keep in mind that the client and the server must agree to sslify at
-    the same time, or they will be waiting on each other forever! See
-    "t/3_insitu.t" for an example of how this works.
 
 FUNCTIONS
   Client_SSLify
@@ -156,31 +103,51 @@ FUNCTIONS
             Furthermore, you can pass in your own $ctx object if you desire. This allows you to set custom parameters
             per-connection, for example.
                     my $socket = shift;     # get the socket from somewhere
-                    my $ctx = Net::SSLeay::CTX_new();
+                    my $ctx = SSLify_ContextCreate();
                     # set various options on $ctx as desired
                     $socket = Server_SSLify( $socket, $ctx );
 
             NOTE: You can use SSLify_GetCTX to modify the global, and avoid doing this on every connection if the
             options are the same...
 
-  SSLify_Options
-            Accepts the location of the SSL key + certificate files and does it's job
+  SSLify_ContextCreate
+            Accepts some options, and returns a brand-new Net::SSLeay context object ( $ctx )
+                    my $ctx = SSLify_ContextCreate( $key, $cert, $version, $options );
 
-            Optionally accepts the SSL version + CTX options
-                    SSLify_Options( $key, $cert, $version, $options );
+            You can then call various Net::SSLeay methods on the context
+                    my $mode = Net::SSLeay::CTX_get_mode( $ctx );
 
-            Known versions:
+            By default we don't use the SSL key + certificate files
+
+            By default we use the version: default
+
+                    Known versions:
                     * sslv2
                     * sslv3
                     * tlsv1
                     * default
 
+            By default we don't set any options
+
+  SSLify_Options
+            Call this function to initialize the global server-side CTX. Accepts the location of the
+            SSL key + certificate files, which is required.
+
+            Optionally accepts the SSL version + CTX options
+                    SSLify_Options( $key, $cert, $version, $options );
+
             By default we use the version: default
+
+                    Known versions:
+                    * sslv2
+                    * sslv3
+                    * tlsv1
+                    * default
 
             By default we use the options: &Net::SSLeay::OP_ALL
 
   SSLify_GetCTX
-            Returns the server-side CTX in case you wanted to play around with it :)
+            Returns the actual Net::SSLeay context object in case you wanted to play with it :)
 
             If passed in a socket, it will return that socket's $ctx instead of the global.
                     my $ctx = SSLify_GetCTX();                      # get the one set via SSLify_Options
@@ -212,23 +179,57 @@ FUNCTIONS
             Example:
                     print "Remote IP is: " . inet_ntoa( ( unpack_sockaddr_in( getpeername( SSLify_GetSocket( $sslified_sock ) ) ) )[1] ) . "\n";
 
-  SSLify_ContextCreate
-            Accepts some options, and returns a brand-new SSL context object ( $ctx )
-                    my $ctx = SSLify_ContextCreate();
-                    my $ctx = SSLify_ContextCreate( $key, $cert );
-                    my $ctx = SSLify_ContextCreate( $key, $cert, $version, $options );
+  SSLify_GetSSL
+            Returns the actual Net::SSLeay object so you can call methods on it
 
-            Known versions:
-                    * sslv2
-                    * sslv3
-                    * tlsv1
-                    * default
+            Example:
+                    print Net::SSLeay::dump_peer_certificate( SSLify_GetSSL( $sslified_sock ) );
 
-            By default we use the version: default
+NOTES
+  Socket methods doesn't work
+    The new socket this module gives you actually is some tied socket magic,
+    so you cannot do stuff like getpeername() or getsockname(). The only way
+    to do it is to use SSLify_GetSocket and then operate on the socket it
+    returns.
 
-            By default we don't set any options
+  Dying everywhere...
+    This module will die() if Net::SSLeay could not be loaded or it is not
+    the version we want. So, it is recommended that you check for errors and
+    not use SSL, like so:
 
-            By default we don't use the SSL key + certificate files
+            eval { use POE::Component::SSLify };
+            if ( $@ ) {
+                    $sslavailable = 0;
+            } else {
+                    $sslavailable = 1;
+            }
+
+            # Make socket SSL!
+            if ( $sslavailable ) {
+                    eval { $socket = POE::Component::SSLify::Client_SSLify( $socket ) };
+                    if ( $@ ) {
+                            # Unable to SSLify the socket...
+                    }
+            }
+
+  OpenSSL functions
+    Theoretically you can do anything that Net::SSLeay exports from the
+    OpenSSL libs on the socket. However, I have not tested every possible
+    function against SSLify, so use them carefully!
+
+   Net::SSLeay::renegotiate
+    This function has been tested ( it's in "t/2_renegotiate.t" ) but it
+    doesn't work on FreeBSD! I tracked it down to this security advisory:
+    <http://security.freebsd.org/advisories/FreeBSD-SA-09:15.ssl.asc> which
+    explains it in detail. The test will skip this function if it detects
+    that you're on a broken system. However, if you have the updated OpenSSL
+    library that fixes this you can use it.
+
+   In-Situ sslification
+    You can have a normal plaintext socket, and convert it to SSL anytime.
+    Just keep in mind that the client and the server must agree to sslify at
+    the same time, or they will be waiting on each other forever! See
+    "t/3_insitu.t" for an example of how this works.
 
 EXPORT
             Stuffs all of the above functions in @EXPORT_OK so you have to request them directly

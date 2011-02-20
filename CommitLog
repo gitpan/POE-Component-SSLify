@@ -2,6 +2,26 @@
 9999-99-99 99:99:99 +0000 HEAD
 ==============================
 
+  commit b4269ddff7e04f09a8f304891469fbdc962e740c
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Sat Feb 19 21:19:21 2011 -0700
+  
+    Add SSLify_GetSSL function, thanks mordy 
+
+=======================================
+2011-02-13 11:11:22 -0700 release-1.001
+=======================================
+
+  commit 6f65b4c33c787f306ec32033f6445be4b5b59516
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Sun Feb 13 11:11:22 2011 -0700
+  
+    New CPAN release of POE-Component-SSLify - v1.001
+
+    Released: 2011-02-13 18:11:07 UTC
+
+    Fixed the Net::SSLeay import code, thanks CPANTesters!
+
   commit 1627d797b6cd2a8a42de31312f699a5e514494ae
   Author: Apocalypse <perl@0ne.us>
   Date:   Sun Feb 13 11:10:05 2011 -0700
