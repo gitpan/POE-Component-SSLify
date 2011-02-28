@@ -9,7 +9,7 @@
 use strict; use warnings;
 package POE::Component::SSLify::ClientHandle;
 BEGIN {
-  $POE::Component::SSLify::ClientHandle::VERSION = '1.002';
+  $POE::Component::SSLify::ClientHandle::VERSION = '1.003';
 }
 BEGIN {
   $POE::Component::SSLify::ClientHandle::AUTHORITY = 'cpan:APOCAL';
@@ -18,12 +18,11 @@ BEGIN {
 # ABSTRACT: Client-side handle for SSLify
 
 # Import the SSL death routines
-use Net::SSLeay qw( die_now die_if_ssl_error );
+use Net::SSLeay 1.36 qw( die_now die_if_ssl_error );
 
 # We inherit from ServerHandle
-use vars qw( @ISA );
 require POE::Component::SSLify::ServerHandle;
-@ISA = qw( POE::Component::SSLify::ServerHandle );
+our @ISA = qw( POE::Component::SSLify::ServerHandle );
 
 # Override TIEHANDLE because we create a CTX
 sub TIEHANDLE {
@@ -69,7 +68,7 @@ POE::Component::SSLify::ClientHandle - Client-side handle for SSLify
 
 =head1 VERSION
 
-  This document describes v1.002 of POE::Component::SSLify::ClientHandle - released February 19, 2011 as part of POE-Component-SSLify.
+  This document describes v1.003 of POE::Component::SSLify::ClientHandle - released February 28, 2011 as part of POE-Component-SSLify.
 
 =head1 DESCRIPTION
 

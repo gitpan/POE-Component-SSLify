@@ -31,11 +31,10 @@ my %WriteMakefileArgs = (
   'PREREQ_PM' => {
     'Exporter' => '0',
     'IO::Handle' => '1.28',
-    'Net::SSLeay' => '0',
-    'Symbol' => '0',
-    'vars' => '0'
+    'Net::SSLeay' => '1.36',
+    'Symbol' => '0'
   },
-  'VERSION' => '1.002',
+  'VERSION' => '1.003',
   'test' => {
     'TESTS' => 't/*.t'
   }

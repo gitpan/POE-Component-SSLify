@@ -2,7 +2,7 @@ NAME
     POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
 VERSION
-      This document describes v1.002 of POE::Component::SSLify - released February 19, 2011 as part of POE-Component-SSLify.
+      This document describes v1.003 of POE::Component::SSLify - released February 28, 2011 as part of POE-Component-SSLify.
 
 SYNOPSIS
             # CLIENT-side usage
@@ -189,7 +189,7 @@ NOTES
   Socket methods doesn't work
     The new socket this module gives you actually is some tied socket magic,
     so you cannot do stuff like getpeername() or getsockname(). The only way
-    to do it is to use SSLify_GetSocket and then operate on the socket it
+    to do it is to use "SSLify_GetSocket" and then operate on the socket it
     returns.
 
   Dying everywhere...
@@ -212,6 +212,18 @@ NOTES
                     }
             }
 
+   $IGNORE_SSL_ERRORS
+    As of SSLify v1.003 you can override this variable to temporarily ignore
+    some SSL errors. This is useful if you are doing crazy things with the
+    underlying Net::SSLeay stuff and don't want to die. However, it won't
+    ignore all errors as some is still considered fatal. Here's an example:
+
+            {
+                    local $POE::Component::SSLify::IGNORE_SSL_ERRORS=1;
+                    my $ctx = SSLify_CreateContext(...);
+                    #Some more stuff
+            }
+
   OpenSSL functions
     Theoretically you can do anything that Net::SSLeay exports from the
     OpenSSL libs on the socket. However, I have not tested every possible
@@ -225,11 +237,17 @@ NOTES
     that you're on a broken system. However, if you have the updated OpenSSL
     library that fixes this you can use it.
 
-   In-Situ sslification
+  In-Situ sslification
     You can have a normal plaintext socket, and convert it to SSL anytime.
     Just keep in mind that the client and the server must agree to sslify at
     the same time, or they will be waiting on each other forever! See
     "t/3_insitu.t" for an example of how this works.
+
+  MSWin32 is not supported
+    This module doesn't work on MSWin32 platforms at all ( XP, Vista, 7, etc
+    ) because of some weird underlying fd issues. Since I'm not a windows
+    developer, I'm unable to fix this. However, it seems like Cygwin on
+    MSWin32 works just fine! Please help me fix this if you can, thanks!
 
 EXPORT
             Stuffs all of the above functions in @EXPORT_OK so you have to request them directly

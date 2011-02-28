@@ -2,6 +2,38 @@
 9999-99-99 99:99:99 +0000 HEAD
 ==============================
 
+  commit 367645dabcbc3ca12aae0c32d7a2e8847274865e
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Mon Feb 28 08:51:38 2011 -0700
+  
+    add note about MSWin32
+
+  commit 8dfc5acbbad45910fc93a6688661fb5c46cffd59
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Mon Feb 28 08:46:09 2011 -0700
+  
+    add IGNORE_SSL_ERRORS, thanks MNUNBERG
+
+  commit cf26ebeb385b4a44dd20a1fa877905e3b948fd74
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Mon Feb 21 00:01:02 2011 -0700
+  
+    add explicit Net::SSLeay version req 
+
+=======================================
+2011-02-19 21:24:02 -0700 release-1.002
+=======================================
+
+  commit e20a8d5cd43978e14b22d50b884edc14f06a72c6
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Sat Feb 19 21:24:02 2011 -0700
+  
+    New CPAN release of POE-Component-SSLify - v1.002
+
+    Released: 2011-02-20 04:23:48 UTC
+
+    Add SSLify_GetSSL to get the Net::SSLeay object, thanks mordy@irc!
+
   commit b4269ddff7e04f09a8f304891469fbdc962e740c
   Author: Apocalypse <perl@0ne.us>
   Date:   Sat Feb 19 21:19:21 2011 -0700

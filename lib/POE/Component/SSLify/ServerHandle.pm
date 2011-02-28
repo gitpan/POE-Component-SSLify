@@ -9,7 +9,7 @@
 use strict; use warnings;
 package POE::Component::SSLify::ServerHandle;
 BEGIN {
-  $POE::Component::SSLify::ServerHandle::VERSION = '1.002';
+  $POE::Component::SSLify::ServerHandle::VERSION = '1.003';
 }
 BEGIN {
   $POE::Component::SSLify::ServerHandle::AUTHORITY = 'cpan:APOCAL';
@@ -18,7 +18,7 @@ BEGIN {
 # ABSTRACT: Server-side handle for SSLify
 
 # Import the SSL death routines
-use Net::SSLeay qw( die_now die_if_ssl_error );
+use Net::SSLeay 1.36 qw( die_now die_if_ssl_error );
 
 # Ties the socket
 sub TIEHANDLE {
@@ -181,7 +181,7 @@ POE::Component::SSLify::ServerHandle - Server-side handle for SSLify
 
 =head1 VERSION
 
-  This document describes v1.002 of POE::Component::SSLify::ServerHandle - released February 19, 2011 as part of POE-Component-SSLify.
+  This document describes v1.003 of POE::Component::SSLify::ServerHandle - released February 28, 2011 as part of POE-Component-SSLify.
 
 =head1 DESCRIPTION
 

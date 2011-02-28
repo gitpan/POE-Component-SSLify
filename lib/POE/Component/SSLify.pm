@@ -9,7 +9,7 @@
 use strict; use warnings;
 package POE::Component::SSLify;
 BEGIN {
-  $POE::Component::SSLify::VERSION = '1.002';
+  $POE::Component::SSLify::VERSION = '1.003';
 }
 BEGIN {
   $POE::Component::SSLify::AUTHORITY = 'cpan:APOCAL';
@@ -44,9 +44,8 @@ BEGIN {
 
 # Do the exporting magic...
 require Exporter;
-use vars qw( @ISA @EXPORT_OK );
-@ISA = qw( Exporter );
-@EXPORT_OK = qw( Client_SSLify Server_SSLify SSLify_Options SSLify_GetCTX SSLify_GetCipher SSLify_GetSocket SSLify_GetSSL SSLify_ContextCreate );
+our @ISA = qw( Exporter );
+our @EXPORT_OK = qw( Client_SSLify Server_SSLify SSLify_Options SSLify_GetCTX SSLify_GetCipher SSLify_GetSocket SSLify_GetSSL SSLify_ContextCreate );
 
 # Bring in some socket-related stuff
 use Symbol qw( gensym );
@@ -57,6 +56,9 @@ use IO::Handle 1.28;
 
 # The server-side CTX stuff
 my $ctx = undef;
+
+# global so users of this module can override it locally
+our $IGNORE_SSL_ERRORS = 0;
 
 
 sub Client_SSLify {
@@ -172,20 +174,21 @@ sub _createSSLcontext {
 
 	# do we need to set options?
 	if ( defined $options ) {
-		Net::SSLeay::CTX_set_options( $context, $options ) and die_if_ssl_error( 'ssl ctx set options' );
+		Net::SSLeay::CTX_set_options( $context, $options );
+		die_if_ssl_error( 'ssl ctx set options' ) if ! $IGNORE_SSL_ERRORS;
 	}
 
 	# do we need to set key/etc?
 	if ( defined $key ) {
 		# Following will ask password unless private key is not encrypted
 		Net::SSLeay::CTX_use_RSAPrivateKey_file( $context, $key, &Net::SSLeay::FILETYPE_PEM );
-		die_if_ssl_error( 'private key' );
+		die_if_ssl_error( 'private key' ) if ! $IGNORE_SSL_ERRORS;
 	}
 
 	# Set the cert file
 	if ( defined $cert ) {
 		Net::SSLeay::CTX_use_certificate_file( $context, $cert, &Net::SSLeay::FILETYPE_PEM );
-		die_if_ssl_error( 'certificate' );
+		die_if_ssl_error( 'certificate' ) if ! $IGNORE_SSL_ERRORS;
 	}
 
 	# All done!
@@ -232,7 +235,7 @@ POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
 =head1 VERSION
 
-  This document describes v1.002 of POE::Component::SSLify - released February 19, 2011 as part of POE-Component-SSLify.
+  This document describes v1.003 of POE::Component::SSLify - released February 28, 2011 as part of POE-Component-SSLify.
 
 =head1 SYNOPSIS
 
@@ -431,7 +434,7 @@ This component represents the standard way to do SSL in POE.
 =head2 Socket methods doesn't work
 
 The new socket this module gives you actually is some tied socket magic, so you cannot do stuff like
-getpeername() or getsockname(). The only way to do it is to use SSLify_GetSocket and then operate on
+getpeername() or getsockname(). The only way to do it is to use L</SSLify_GetSocket> and then operate on
 the socket it returns.
 
 =head2 Dying everywhere...
@@ -454,6 +457,18 @@ that you check for errors and not use SSL, like so:
 		}
 	}
 
+=head3 $IGNORE_SSL_ERRORS
+
+As of SSLify v1.003 you can override this variable to temporarily ignore some SSL errors. This is useful if you are doing crazy things
+with the underlying Net::SSLeay stuff and don't want to die. However, it won't ignore all errors as some is still considered fatal.
+Here's an example:
+
+	{
+		local $POE::Component::SSLify::IGNORE_SSL_ERRORS=1;
+		my $ctx = SSLify_CreateContext(...);
+		#Some more stuff
+	}
+
 =head2 OpenSSL functions
 
 Theoretically you can do anything that Net::SSLeay exports from the OpenSSL libs on the socket. However, I have not tested every
@@ -465,10 +480,15 @@ This function has been tested ( it's in C<t/2_renegotiate.t> ) but it doesn't wo
 L<http://security.freebsd.org/advisories/FreeBSD-SA-09:15.ssl.asc> which explains it in detail. The test will skip this function
 if it detects that you're on a broken system. However, if you have the updated OpenSSL library that fixes this you can use it.
 
-=head3 In-Situ sslification
+=head2 In-Situ sslification
 
 You can have a normal plaintext socket, and convert it to SSL anytime. Just keep in mind that the client and the server must agree to sslify
 at the same time, or they will be waiting on each other forever! See C<t/3_insitu.t> for an example of how this works.
+
+=head2 MSWin32 is not supported
+
+This module doesn't work on MSWin32 platforms at all ( XP, Vista, 7, etc ) because of some weird underlying fd issues. Since I'm not a windows
+developer, I'm unable to fix this. However, it seems like Cygwin on MSWin32 works just fine! Please help me fix this if you can, thanks!
 
 =head1 EXPORT
 

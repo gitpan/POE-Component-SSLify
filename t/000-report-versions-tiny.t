@@ -53,14 +53,13 @@ eval { $v .= pmver('File::Find','any version') };
 eval { $v .= pmver('File::Temp','any version') };
 eval { $v .= pmver('IO::Handle','1.28') };
 eval { $v .= pmver('Module::Build','0.3601') };
-eval { $v .= pmver('Net::SSLeay','any version') };
+eval { $v .= pmver('Net::SSLeay','1.36') };
 eval { $v .= pmver('POE','1.267') };
 eval { $v .= pmver('POE::Component::Client::TCP','any version') };
 eval { $v .= pmver('POE::Component::Server::TCP','any version') };
 eval { $v .= pmver('Socket','any version') };
 eval { $v .= pmver('Symbol','any version') };
 eval { $v .= pmver('Test::More','0.88') };
-eval { $v .= pmver('vars','any version') };
 
 
 
