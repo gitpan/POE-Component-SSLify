@@ -57,9 +57,12 @@ eval { $v .= pmver('Net::SSLeay','1.36') };
 eval { $v .= pmver('POE','1.267') };
 eval { $v .= pmver('POE::Component::Client::TCP','any version') };
 eval { $v .= pmver('POE::Component::Server::TCP','any version') };
+eval { $v .= pmver('Scalar::Util','any version') };
 eval { $v .= pmver('Socket','any version') };
 eval { $v .= pmver('Symbol','any version') };
+eval { $v .= pmver('Task::Weaken','1.03') };
 eval { $v .= pmver('Test::More','0.88') };
+eval { $v .= pmver('parent','any version') };
 
 
 

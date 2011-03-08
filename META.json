@@ -4,7 +4,7 @@
       "Apocalypse <APOCAL@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.102345, CPAN::Meta::Converter version 2.102400",
+   "generated_by" : "Dist::Zilla version 4.200005, CPAN::Meta::Converter version 2.102400",
    "license" : [
       "perl_5"
    ],
@@ -36,7 +36,10 @@
             "Exporter" : 0,
             "IO::Handle" : "1.28",
             "Net::SSLeay" : "1.36",
+            "Scalar::Util" : 0,
             "Symbol" : 0,
+            "Task::Weaken" : "1.03",
+            "parent" : 0,
             "perl" : "5.006"
          }
       },
@@ -55,15 +58,15 @@
    "provides" : {
       "POE::Component::SSLify" : {
          "file" : "lib/POE/Component/SSLify.pm",
-         "version" : "1.003"
+         "version" : "1.004"
       },
       "POE::Component::SSLify::ClientHandle" : {
          "file" : "lib/POE/Component/SSLify/ClientHandle.pm",
-         "version" : "1.003"
+         "version" : "1.004"
       },
       "POE::Component::SSLify::ServerHandle" : {
          "file" : "lib/POE/Component/SSLify/ServerHandle.pm",
-         "version" : "1.003"
+         "version" : "1.004"
       }
    },
    "release_status" : "stable",
@@ -82,7 +85,7 @@
          "web" : "http://github.com/apocalypse/perl-poe-sslify"
       }
    },
-   "version" : "1.003",
+   "version" : "1.004",
    "x_BuiltWith" : {
       "modules" : {
          "Exporter" : "5.63",
@@ -94,9 +97,12 @@
          "POE" : "1.299",
          "POE::Component::Client::TCP" : "1.299",
          "POE::Component::Server::TCP" : "1.299",
+         "Scalar::Util" : "1.23",
          "Socket" : "1.80",
          "Symbol" : "1.06",
+         "Task::Weaken" : "1.03",
          "Test::More" : "0.96",
+         "parent" : "0.224",
          "perl" : "NA(skipped: perl)"
       },
       "perl" : {
@@ -121,32 +127,37 @@
          {
             "class" : "Dist::Zilla::Plugin::GatherDir",
             "name" : "@Apocalyptic/GatherDir",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::PruneCruft",
             "name" : "@Apocalyptic/PruneCruft",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::AutoPrereqs",
             "name" : "@Apocalyptic/AutoPrereqs",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::GenerateFile",
             "name" : "@Apocalyptic/MANIFEST.SKIP",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::ManifestSkip",
             "name" : "@Apocalyptic/ManifestSkip",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::CompileTests",
             "name" : "@Apocalyptic/CompileTests",
             "version" : "1.103030"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::ApocalypseTests",
+            "name" : "@Apocalyptic/ApocalypseTests",
+            "version" : "1.001"
          },
          {
             "class" : "Dist::Zilla::Plugin::ReportVersions::Tiny",
@@ -166,7 +177,7 @@
          {
             "class" : "Dist::Zilla::Plugin::PkgVersion",
             "name" : "@Apocalyptic/PkgVersion",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::PodWeaver",
@@ -176,7 +187,7 @@
          {
             "class" : "Dist::Zilla::Plugin::NextRelease",
             "name" : "@Apocalyptic/NextRelease",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::ChangelogFromGit",
@@ -201,7 +212,7 @@
          {
             "class" : "Dist::Zilla::Plugin::MetaConfig",
             "name" : "@Apocalyptic/MetaConfig",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::MetaData::BuiltWith",
@@ -230,12 +241,12 @@
          {
             "class" : "Dist::Zilla::Plugin::MetaResources",
             "name" : "@Apocalyptic/MetaResources",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::MetaNoIndex",
             "name" : "@Apocalyptic/MetaNoIndex",
-            "version" : "1.101550"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::MetaProvides::Package",
@@ -245,17 +256,17 @@
          {
             "class" : "Dist::Zilla::Plugin::License",
             "name" : "@Apocalyptic/License",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::MakeMaker",
             "name" : "@Apocalyptic/MakeMaker",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::ModuleBuild",
             "name" : "@Apocalyptic/ModuleBuild",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::DualBuilders",
@@ -265,12 +276,12 @@
          {
             "class" : "Dist::Zilla::Plugin::MetaYAML",
             "name" : "@Apocalyptic/MetaYAML",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::MetaJSON",
             "name" : "@Apocalyptic/MetaJSON",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::ReadmeFromPod",
@@ -290,7 +301,7 @@
          {
             "class" : "Dist::Zilla::Plugin::Manifest",
             "name" : "@Apocalyptic/Manifest",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::CheckChangesHasContent",
@@ -303,14 +314,19 @@
             "version" : "1.110500"
          },
          {
+            "class" : "Dist::Zilla::Plugin::TestRelease",
+            "name" : "@Apocalyptic/TestRelease",
+            "version" : "4.200005"
+         },
+         {
             "class" : "Dist::Zilla::Plugin::ConfirmRelease",
             "name" : "@Apocalyptic/ConfirmRelease",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::UploadToCPAN",
             "name" : "@Apocalyptic/UploadToCPAN",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::ArchiveRelease",
@@ -335,22 +351,22 @@
          {
             "class" : "Dist::Zilla::Plugin::FinderCode",
             "name" : ":InstallModules",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::FinderCode",
             "name" : ":TestFiles",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::FinderCode",
             "name" : ":ExecFiles",
-            "version" : "4.102345"
+            "version" : "4.200005"
          },
          {
             "class" : "Dist::Zilla::Plugin::FinderCode",
             "name" : ":ShareFiles",
-            "version" : "4.102345"
+            "version" : "4.200005"
          }
       ],
       "zilla" : {
@@ -358,7 +374,7 @@
          "config" : {
             "is_trial" : 0
          },
-         "version" : "4.102345"
+         "version" : "4.200005"
       }
    },
    "x_authority" : "cpan:APOCAL"

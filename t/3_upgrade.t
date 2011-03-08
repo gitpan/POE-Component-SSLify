@@ -8,10 +8,9 @@
 # the same terms as the Perl 5 programming language system itself.
 #
 use strict; use warnings;
-
-# Thanks to ASCENT for this test!
-
 use strict; use warnings;
+
+# This tests in-situ sslification ( upgrade a non-ssl socket to ssl )
 
 my $numtests;
 BEGIN {
@@ -21,7 +20,6 @@ BEGIN {
 	if ( ! $@ ) {
 		# increment by one
 		$numtests++;
-
 	}
 }
 
@@ -121,6 +119,7 @@ POE::Component::Client::TCP->new
 	Alias		=> 'myclient',
 	RemoteAddress	=> '127.0.0.1',
 	RemotePort	=> $port,
+
 	Connected	=> sub
 	{
 		ok(1, 'CLIENT: connected');

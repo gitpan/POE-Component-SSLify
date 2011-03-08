@@ -2,6 +2,113 @@
 9999-99-99 99:99:99 +0000 HEAD
 ==============================
 
+  commit f9f664939980fdd646c3331815c7c9935e9ee248
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Tue Mar 8 16:29:27 2011 -0700
+  
+    yet more POD tweaks
+
+  commit 79116f5515997c0353659c5611d943f73e6a3d58
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Tue Mar 8 16:23:19 2011 -0700
+  
+    add more POD about callback and make the status a boolean value
+
+  commit fb1c1a1c135a20fea4f749548d6d34cab1735ff9
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Tue Mar 8 14:43:41 2011 -0700
+  
+    fix some nits reported by PerlCritic
+
+  commit 602dac644a11b2331217895056e034d9226310b4
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Tue Mar 8 13:27:32 2011 -0700
+  
+    tweak testsuite
+
+  commit 7ad6bbbc8e1d95f5dd4fbdb4df957e32eb31519c
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Tue Mar 8 12:45:28 2011 -0700
+  
+    more doc tweaks
+
+  commit 5079fc8f5c3e4a9275f5fab7a80a10910800f3e1
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Tue Mar 8 12:33:10 2011 -0700
+  
+    add more connect fail tests
+
+  commit 9700e8dd8f22d73bfeca5b2e603ad3eb85cb310c
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Tue Mar 8 12:32:56 2011 -0700
+  
+    massive doc revamp
+
+  commit 13dde50f6a039812fb8b335c0318ccf467b2331e
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Tue Mar 8 00:23:22 2011 -0700
+  
+    add connfail test
+
+  commit d96b80b1a4c1876d82e217677d0cdf33b1f68160
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Mon Mar 7 17:14:38 2011 -0700
+  
+    add note about renegotiation and connection function
+
+  commit 4df07a720ee9ad46fc39bb4fd39ad46db3c6a710
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Mon Mar 7 16:56:44 2011 -0700
+  
+    add testcase for connref hooks
+
+  commit def0826f81ef2825c9be2c3a9aa2e0a3588c5489
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Mon Mar 7 16:55:24 2011 -0700
+  
+    add GetStatus and finalize connref stuff
+
+  commit f5b8e4ae8016715cf5d9385d5771dac8dbe59abd
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Mon Mar 7 16:13:03 2011 -0700
+  
+    more fixes and add hook testcase
+
+  commit 3e003c92bc922091587960de5a02c5bdfec36c8c
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Mon Mar 7 16:04:00 2011 -0700
+  
+    add actual hook functionality for connection done
+
+  commit 95ea76ec6e5a93cc8ff8b99df5a9b1558db27984
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Mon Mar 7 15:31:27 2011 -0700
+  
+    initial commit for hook work
+
+  commit d7914f5f0a6d9cd3065c23ab70f91d9912eba084
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Mon Mar 7 14:58:09 2011 -0700
+  
+    use CTX_use_certificate_chain_file 
+
+=======================================
+2011-02-28 08:52:48 -0700 release-1.003
+=======================================
+
+  commit dba0e05d424aeeb766bf887c1e731593777a6b5b
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Mon Feb 28 08:52:48 2011 -0700
+  
+    New CPAN release of POE-Component-SSLify - v1.003
+
+    Released: 2011-02-28 15:52:24 UTC
+
+    Add $IGNORE_SSL_ERRORS to ignore certain SSL errors, thanks MNUNBERG
+    - RT#66130
+
+    Remove prereq on vars.pm as it's obsolete
+
   commit 367645dabcbc3ca12aae0c32d7a2e8847274865e
   Author: Apocalypse <perl@0ne.us>
   Date:   Mon Feb 28 08:51:38 2011 -0700

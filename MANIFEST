@@ -23,4 +23,8 @@ t/00-compile.t
 t/000-report-versions-tiny.t
 t/1_simple.t
 t/2_renegotiate.t
-t/3_insitu.t
+t/3_upgrade.t
+t/4_connect_hook.t
+t/5_connfail_client.t
+t/6_connfail_server.t
+t/apocalypse.t
