@@ -9,7 +9,7 @@
 use strict; use warnings;
 package POE::Component::SSLify;
 BEGIN {
-  $POE::Component::SSLify::VERSION = '1.004';
+  $POE::Component::SSLify::VERSION = '1.005';
 }
 BEGIN {
   $POE::Component::SSLify::AUTHORITY = 'cpan:APOCAL';
@@ -282,7 +282,7 @@ POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
 =head1 VERSION
 
-  This document describes v1.004 of POE::Component::SSLify - released March 08, 2011 as part of POE-Component-SSLify.
+  This document describes v1.005 of POE::Component::SSLify - released March 10, 2011 as part of POE-Component-SSLify.
 
 =head1 SYNOPSIS
 
