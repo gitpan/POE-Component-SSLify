@@ -58,15 +58,15 @@
    "provides" : {
       "POE::Component::SSLify" : {
          "file" : "lib/POE/Component/SSLify.pm",
-         "version" : "1.005"
+         "version" : "1.006"
       },
       "POE::Component::SSLify::ClientHandle" : {
          "file" : "lib/POE/Component/SSLify/ClientHandle.pm",
-         "version" : "1.005"
+         "version" : "1.006"
       },
       "POE::Component::SSLify::ServerHandle" : {
          "file" : "lib/POE/Component/SSLify/ServerHandle.pm",
-         "version" : "1.005"
+         "version" : "1.006"
       }
    },
    "release_status" : "stable",
@@ -85,7 +85,7 @@
          "web" : "http://github.com/apocalypse/perl-poe-sslify"
       }
    },
-   "version" : "1.005",
+   "version" : "1.006",
    "x_BuiltWith" : {
       "modules" : {
          "Exporter" : "5.63",
@@ -94,7 +94,7 @@
          "IO::Handle" : "1.28",
          "Module::Build" : "0.3607",
          "Net::SSLeay" : "1.36",
-         "POE" : "1.299",
+         "POE" : "1.310",
          "POE::Component::Client::TCP" : "1.299",
          "POE::Component::Server::TCP" : "1.299",
          "Scalar::Util" : "1.23",
@@ -162,7 +162,7 @@
          {
             "class" : "Dist::Zilla::Plugin::ReportVersions::Tiny",
             "name" : "@Apocalyptic/ReportVersions::Tiny",
-            "version" : "1.02"
+            "version" : "1.03"
          },
          {
             "class" : "Dist::Zilla::Plugin::Prepender",
@@ -172,7 +172,7 @@
          {
             "class" : "Dist::Zilla::Plugin::Authority",
             "name" : "@Apocalyptic/Authority",
-            "version" : "1.003"
+            "version" : "1.005"
          },
          {
             "class" : "Dist::Zilla::Plugin::PkgVersion",
@@ -197,7 +197,7 @@
          {
             "class" : "Dist::Zilla::Plugin::MinimumPerl",
             "name" : "@Apocalyptic/MinimumPerl",
-            "version" : "1.001"
+            "version" : "1.003"
          },
          {
             "class" : "Dist::Zilla::Plugin::Bugtracker",

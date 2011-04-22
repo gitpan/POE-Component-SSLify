@@ -27,4 +27,6 @@ t/3_upgrade.t
 t/4_connect_hook.t
 t/5_connfail_client.t
 t/6_connfail_server.t
+t/7_connect_hook_nodata.t
+t/99_mire_test.t
 t/apocalypse.t

@@ -9,7 +9,7 @@
 use strict; use warnings;
 package POE::Component::SSLify;
 BEGIN {
-  $POE::Component::SSLify::VERSION = '1.005';
+  $POE::Component::SSLify::VERSION = '1.006';
 }
 BEGIN {
   $POE::Component::SSLify::AUTHORITY = 'cpan:APOCAL';
@@ -282,7 +282,7 @@ POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
 =head1 VERSION
 
-  This document describes v1.005 of POE::Component::SSLify - released March 10, 2011 as part of POE-Component-SSLify.
+  This document describes v1.006 of POE::Component::SSLify - released April 21, 2011 as part of POE-Component-SSLify.
 
 =head1 SYNOPSIS
 
@@ -633,17 +633,23 @@ in addition to those websites please use your favorite search engine to discover
 
 Search CPAN
 
+The default CPAN search engine, useful to view POD in HTML format.
+
 L<http://search.cpan.org/dist/POE-Component-SSLify>
 
 =item *
 
 RT: CPAN's Bug Tracker
 
+The RT ( Request Tracker ) website is the default bug/issue tracking system for CPAN.
+
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-SSLify>
 
 =item *
 
-AnnoCPAN: Annotated CPAN documentation
+AnnoCPAN
+
+The AnnoCPAN is a website that allows community annonations of Perl module documentation.
 
 L<http://annocpan.org/dist/POE-Component-SSLify>
 
@@ -651,31 +657,49 @@ L<http://annocpan.org/dist/POE-Component-SSLify>
 
 CPAN Ratings
 
+The CPAN Ratings is a website that allows community ratings and reviews of Perl modules.
+
 L<http://cpanratings.perl.org/d/POE-Component-SSLify>
 
 =item *
 
 CPAN Forum
 
+The CPAN Forum is a web forum for discussing Perl modules.
+
 L<http://cpanforum.com/dist/POE-Component-SSLify>
 
 =item *
 
-CPANTS Kwalitee
+CPANTS
+
+The CPANTS is a website that analyzes the Kwalitee ( code metrics ) of a distribution.
 
 L<http://cpants.perl.org/dist/overview/POE-Component-SSLify>
 
 =item *
 
-CPAN Testers Results
+CPAN Testers
 
-L<http://cpantesters.org/distro/P/POE-Component-SSLify.html>
+The CPAN Testers is a network of smokers who run automated tests on uploaded CPAN distributions.
+
+L<http://www.cpantesters.org/distro/P/POE-Component-SSLify>
 
 =item *
 
 CPAN Testers Matrix
 
+The CPAN Testers Matrix is a website that provides a visual way to determine what Perls/platforms PASSed for a distribution.
+
 L<http://matrix.cpantesters.org/?dist=POE-Component-SSLify>
+
+=item *
+
+CPAN Testers Dependencies
+
+The CPAN Testers Dependencies is a website that shows a chart of the test results of all dependencies for a distribution.
+
+L<http://deps.cpantesters.org/?module=POE::Component::SSLify>
 
 =back
 

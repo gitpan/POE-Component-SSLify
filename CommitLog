@@ -2,6 +2,70 @@
 9999-99-99 99:99:99 +0000 HEAD
 ==============================
 
+  commit df65edee2621f55f347db2c70d779e44d93b87d2
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Thu Apr 21 17:16:15 2011 -0700
+  
+    mire@irc is now MIRE, congrats
+
+  commit 853522b575570c997d3c8ff70c530cd45cde1e40
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Thu Apr 21 14:54:08 2011 -0700
+  
+    tweak mires test a bit
+
+  commit e745765e01f9c07e0b195b2c49be40bea2e916f4
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Thu Apr 21 08:28:42 2011 -0700
+  
+    start of work on mire's testcase
+
+  commit 15e3d473b68e6e0ac36673bbc71b7125fd49ed2f
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Thu Apr 21 00:03:23 2011 -0700
+  
+    add mire test to be worked into a proper AUTHOR test
+
+  commit ad5c8c95dce50c051d8c54ade4c90b45f49103c3
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Wed Apr 20 20:44:15 2011 -0700
+  
+    update changelog for the fixes
+
+  commit ed9e2b33c10572df76e790ffad68d3d7ecb820f9
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Wed Apr 20 20:11:17 2011 -0700
+  
+    fix random SSL failures, spotted by mire
+
+  commit 5a9b28e587a3dace6ed71bd93691215b47cbc348
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Wed Apr 20 20:09:00 2011 -0700
+  
+    tweak the connfail tests and make the server test work
+
+  commit 806d4c4df5ca108c8cfacbb19babcfebc8b05cdc
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Wed Apr 20 20:08:18 2011 -0700
+  
+    tweak the hook tests to cover the case where there is no data sent
+    over the wire 
+
+=======================================
+2011-03-10 00:56:13 -0700 release-1.005
+=======================================
+
+  commit bc1a271e1f6e597f42cf03723ef6525a21281bea
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Thu Mar 10 00:56:13 2011 -0700
+  
+    New CPAN release of POE-Component-SSLify - v1.005
+
+    Released: 2011-03-10 07:55:30 UTC
+
+    Fix the connfail tests due to an incorrect assumption regards socket
+    close value, thanks CPANTesters!
+
   commit d8b4c0e354acf683f17fd63186810226e101b54e
   Author: Apocalypse <perl@0ne.us>
   Date:   Thu Mar 10 00:54:05 2011 -0700
