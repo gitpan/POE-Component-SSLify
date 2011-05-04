@@ -22,11 +22,13 @@ mylib/example.key
 t/00-compile.t
 t/000-report-versions-tiny.t
 t/1_simple.t
-t/2_renegotiate.t
+t/2_renegotiate_client.t
 t/3_upgrade.t
 t/4_connect_hook.t
 t/5_connfail_client.t
 t/6_connfail_server.t
 t/7_connect_hook_nodata.t
+t/8_renegotiate_server.t
+t/98_renegotiate.t
 t/99_mire_test.t
 t/apocalypse.t

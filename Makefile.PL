@@ -37,7 +37,7 @@ my %WriteMakefileArgs = (
     'Task::Weaken' => '1.03',
     'parent' => '0'
   },
-  'VERSION' => '1.006',
+  'VERSION' => '1.007',
   'test' => {
     'TESTS' => 't/*.t'
   }

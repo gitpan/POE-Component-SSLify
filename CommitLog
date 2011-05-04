@@ -2,6 +2,44 @@
 9999-99-99 99:99:99 +0000 HEAD
 ==============================
 
+  commit 958b153b6d09773230336793b1a3f2f2848a55dc
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Wed May 4 14:34:15 2011 -0700
+  
+    rename some POD for pod::coverage tests
+
+  commit 125745d00aa051e13a18ac207a618c50913bbd57
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Wed May 4 14:21:22 2011 -0700
+  
+    rewrite the renegotiate tests in hope of fixing RT#66741
+
+  commit 393337624aef50602f4f2e9ff4ec412e1cbe7d76
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Wed May 4 14:02:59 2011 -0700
+  
+    fix netbsd coredumps by not loading ENGINEs, reported by BINGOS 
+
+=======================================
+2011-04-21 17:22:30 -0700 release-1.006
+=======================================
+
+  commit 0096f51336380c31d99e87cf93a63ed650e60aff
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Thu Apr 21 17:22:30 2011 -0700
+  
+    New CPAN release of POE-Component-SSLify - v1.006
+
+    Released: 2011-04-22 00:21:51 UTC
+
+    Fix a heinous bug where openssl will randomly+reliably close a
+    connection ( thanks MIRE )
+
+    Tweak the hook tests so they test the case where no data is sent over
+    the connection
+
+    Tweak the connfail tests so they work better
+
   commit df65edee2621f55f347db2c70d779e44d93b87d2
   Author: Apocalypse <perl@0ne.us>
   Date:   Thu Apr 21 17:16:15 2011 -0700

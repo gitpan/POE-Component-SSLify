@@ -24,7 +24,7 @@ my %module_build_args = (
     'Apocalypse <APOCAL@cpan.org>'
   ],
   'dist_name' => 'POE-Component-SSLify',
-  'dist_version' => '1.006',
+  'dist_version' => '1.007',
   'license' => 'perl',
   'module_name' => 'POE::Component::SSLify',
   'recommends' => {},
