@@ -32,12 +32,13 @@ my %WriteMakefileArgs = (
     'Exporter' => '0',
     'IO::Handle' => '1.28',
     'Net::SSLeay' => '1.36',
+    'POE' => '0',
     'Scalar::Util' => '0',
     'Symbol' => '0',
     'Task::Weaken' => '1.03',
     'parent' => '0'
   },
-  'VERSION' => '1.007',
+  'VERSION' => '1.008',
   'test' => {
     'TESTS' => 't/*.t'
   }

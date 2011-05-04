@@ -9,7 +9,7 @@
 use strict; use warnings;
 package POE::Component::SSLify;
 BEGIN {
-  $POE::Component::SSLify::VERSION = '1.007';
+  $POE::Component::SSLify::VERSION = '1.008';
 }
 BEGIN {
   $POE::Component::SSLify::AUTHORITY = 'cpan:APOCAL';
@@ -100,6 +100,9 @@ use IO::Handle 1.28;
 # Use Scalar::Util's weaken() for the connref stuff
 use Scalar::Util qw( weaken );
 use Task::Weaken 1.03; # to make sure it actually works!
+
+# load POE ( just to fool dzil AutoPrereqs :)
+require POE;
 
 # The server-side CTX stuff
 my $ctx;
@@ -324,7 +327,7 @@ POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
 =head1 VERSION
 
-  This document describes v1.007 of POE::Component::SSLify - released May 04, 2011 as part of POE-Component-SSLify.
+  This document describes v1.008 of POE::Component::SSLify - released May 04, 2011 as part of POE-Component-SSLify.
 
 =head1 SYNOPSIS
 

@@ -36,6 +36,7 @@
             "Exporter" : 0,
             "IO::Handle" : "1.28",
             "Net::SSLeay" : "1.36",
+            "POE" : 0,
             "Scalar::Util" : 0,
             "Symbol" : 0,
             "Task::Weaken" : "1.03",
@@ -58,15 +59,15 @@
    "provides" : {
       "POE::Component::SSLify" : {
          "file" : "lib/POE/Component/SSLify.pm",
-         "version" : "1.007"
+         "version" : "1.008"
       },
       "POE::Component::SSLify::ClientHandle" : {
          "file" : "lib/POE/Component/SSLify/ClientHandle.pm",
-         "version" : "1.007"
+         "version" : "1.008"
       },
       "POE::Component::SSLify::ServerHandle" : {
          "file" : "lib/POE/Component/SSLify/ServerHandle.pm",
-         "version" : "1.007"
+         "version" : "1.008"
       }
    },
    "release_status" : "stable",
@@ -85,7 +86,7 @@
          "web" : "http://github.com/apocalypse/perl-poe-sslify"
       }
    },
-   "version" : "1.007",
+   "version" : "1.008",
    "x_BuiltWith" : {
       "modules" : {
          "Exporter" : "5.63",

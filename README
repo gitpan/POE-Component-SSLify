@@ -2,7 +2,7 @@ NAME
     POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
 VERSION
-      This document describes v1.007 of POE::Component::SSLify - released May 04, 2011 as part of POE-Component-SSLify.
+      This document describes v1.008 of POE::Component::SSLify - released May 04, 2011 as part of POE-Component-SSLify.
 
 SYNOPSIS
             # CLIENT-side usage

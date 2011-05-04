@@ -2,6 +2,33 @@
 9999-99-99 99:99:99 +0000 HEAD
 ==============================
 
+  commit 4fa0a44b7f0a9b37ef5fcbcb07ad6e45dd50b265
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Wed May 4 14:53:14 2011 -0700
+  
+    actually require POE as a runtime prereq, thanks Bazerka@irc 
+
+=======================================
+2011-05-04 14:37:11 -0700 release-1.007
+=======================================
+
+  commit 5ada288a8ab2b24c6472e5a8fb3f43958fa22445
+  Author: Apocalypse <perl@0ne.us>
+  Date:   Wed May 4 14:37:11 2011 -0700
+  
+    New CPAN release of POE-Component-SSLify - v1.007
+
+    Released: 2011-05-04 21:36:32 UTC
+
+    Revert the ENGINE load logic added in 1.004 because it was causing
+    coredumps on netbsd ( thanks BINGOS! )
+
+    Add the constant LOAD_SSL_ENGINES sub if you need to load the ssl
+    engines
+
+    Tweak the renegotiate tests to be more tolerant of failures, thanks
+    RCAPUTO - RT#66741
+
   commit 958b153b6d09773230336793b1a3f2f2848a55dc
   Author: Apocalypse <perl@0ne.us>
   Date:   Wed May 4 14:34:15 2011 -0700

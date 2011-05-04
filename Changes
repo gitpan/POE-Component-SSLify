@@ -1,5 +1,10 @@
 Revision history for Perl extension POE::Component::SSLify.
 
+1.008
+	Released: 2011-05-04 21:55:27 UTC
+
+	Bazerka@irc noticed that POE wasn't even listed as a runtime prereq, d0h!
+
 1.007
 	Released: 2011-05-04 21:36:32 UTC
 
