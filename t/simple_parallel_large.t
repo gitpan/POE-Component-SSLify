@@ -2,7 +2,7 @@
 #
 # This file is part of POE-Component-SSLify
 #
-# This software is copyright (c) 2011 by Apocalypse.
+# This software is copyright (c) 2014 by Apocalypse.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
@@ -10,39 +10,22 @@
 use strict; use warnings;
 use strict; use warnings;
 
-# Thanks to ASCENT for this test!
-# This test adds renegotiation to the connection from client-side
+# This is an extension of the simple_parallel.t test to test for large responses
 
-# In an older version of this test, there was ok() littered everywhere
-# but dngor replied in http://rt.cpan.org/Public/Bug/Display.html?id=66741
-# that it's not going to work... how do I predict which ok() will fail and "simulate" them?
-# the solution was to... only run a few tests and print the diag
-# because the rest of the tests just redo what we already have in 1_simple.t and stuff...
-
-my $numtests;
-BEGIN {
-	$numtests = 16;
-
-	eval "use Test::NoWarnings";
-	if ( ! $@ ) {
-		# increment by one
-		$numtests++;
-	}
-}
-
-use Test::More tests => $numtests;
+use Test::FailWarnings;
+use Test::More 1.001002; # new enough for sanity in done_testing()
 
 use POE 1.267;
 use POE::Component::Client::TCP;
 use POE::Component::Server::TCP;
 use POE::Component::SSLify qw/Client_SSLify Server_SSLify SSLify_Options SSLify_GetCipher SSLify_ContextCreate SSLify_GetSocket SSLify_GetSSL/;
-use Net::SSLeay qw/ERROR_WANT_READ ERROR_WANT_WRITE/;
 
 # TODO rewrite this to use Test::POE::Server::TCP and stuff :)
 
 my $port;
-my $server_ping2;
-my $client_ping2;
+my $replies = 0;
+
+my $bigpacket = join( '-', ('a' .. 'z') x 10000, ('A' .. 'Z') x 10000 ) x 2;
 
 POE::Component::Server::TCP->new
 (
@@ -62,7 +45,7 @@ POE::Component::Server::TCP->new
 	ClientDisconnected	=> sub
 	{
 		ok(1, 'SERVER: client disconnected');
-		$_[KERNEL]->post(myserver => 'shutdown');
+		$_[KERNEL]->post(myserver => 'shutdown') if $replies == 10;
 	},
 	ClientPreConnect	=> sub
 	{
@@ -83,17 +66,12 @@ POE::Component::Server::TCP->new
 	{
 		my ($kernel, $heap, $line) = @_[KERNEL, HEAP, ARG0];
 
-		if ($line eq 'ping') {
-			ok(1, "SERVER: recv: $line");
-
+		if ( $line eq $bigpacket ) {
 			## At this point, connection MUST be encrypted.
 			my $cipher = SSLify_GetCipher($heap->{client}->get_output_handle);
 			ok($cipher ne '(NONE)', "SERVER: SSLify_GetCipher: $cipher");
 
-			$heap->{client}->put("pong");
-		} elsif ($line eq 'ping2') {
-			$server_ping2++;
-			$heap->{client}->put("pong2");
+			$heap->{client}->put($bigpacket);
 		} else {
 			die "Unknown line from CLIENT: $line";
 		}
@@ -108,7 +86,7 @@ POE::Component::Server::TCP->new
 		$error = "Normal disconnection" unless $error;
 		my $msg = "Got SERVER $syscall error $errno: $error";
 		unless ( $syscall eq 'read' and $errno == 0 ) {
-#			fail( $msg );
+			fail( $msg );
 		} else {
 			diag( $msg ) if $ENV{TEST_VERBOSE};
 		}
@@ -125,7 +103,7 @@ POE::Component::Client::TCP->new
 	{
 		ok(1, 'CLIENT: connected');
 
-		$_[HEAP]->{server}->put("ping");
+		$_[HEAP]->{server}->put($bigpacket);
 	},
 	PreConnect	=> sub
 	{
@@ -144,19 +122,12 @@ POE::Component::Client::TCP->new
 	{
 		my ($kernel, $heap, $line) = @_[KERNEL, HEAP, ARG0];
 
-		if ($line eq 'pong') {
-			ok(1, "CLIENT: recv: $line");
-
+		if ($line eq $bigpacket) {
 			## At this point, connection MUST be encrypted.
 			my $cipher = SSLify_GetCipher($heap->{server}->get_output_handle);
 			ok($cipher ne '(NONE)', "CLIENT: SSLify_GetCipher: $cipher");
-
-			# do the actual renegotiate
-			Net::SSLeay::renegotiate( SSLify_GetSSL( $heap->{server}->get_output_handle ) );
-
-			$heap->{server}->put('ping2');
-		} elsif ($line eq 'pong2') {
-			$client_ping2++;
+			diag( Net::SSLeay::dump_peer_certificate( SSLify_GetSSL( $heap->{server}->get_output_handle ) ) ) if $ENV{TEST_VERBOSE};
+			$replies++;
 			$kernel->yield('shutdown');
 		} else {
 			die "Unknown line from SERVER: $line";
@@ -168,21 +139,19 @@ POE::Component::Client::TCP->new
 		# The default PoCo::Client::TCP handler will throw a warning, which causes Test::NoWarnings to FAIL :(
 		my ($syscall, $errno, $error) = @_[ ARG0..ARG2 ];
 
+		# TODO are there other "errors" that is harmless?
 		$error = "Normal disconnection" unless $error;
 		my $msg = "Got CLIENT $syscall error $errno: $error";
-		diag( $msg ) if $ENV{TEST_VERBOSE};
+		unless ( $syscall eq 'read' and $errno == 0 ) {
+			fail( $msg );
+		} else {
+			diag( $msg ) if $ENV{TEST_VERBOSE};
+		}
 	},
-);
+) for 1 .. 10;
 
 $poe_kernel->run();
 
-if ( ! $server_ping2 or ! $client_ping2 ) {
-	diag( "WARNING: Your platform/SSL library does not support renegotiation of the SSL socket." );
-	diag( "This test harness detected that trying to renegotiate resulted in a disconnected socket." );
-	diag( "POE::Component::SSLify will work on your system, but please do not attempt a SSL renegotiate." );
-	diag( "Please talk with the author to figure out if this issue can be worked around, thank you!" );
-}
+is( $replies, 10, "Make sure we got 10 replies back!" );
 
-pass( 'shut down sanely' );
-
-exit 0;
+done_testing;

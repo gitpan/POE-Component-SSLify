@@ -1,343 +1,59 @@
-==============================
-9999-99-99 99:99:99 +0000 HEAD
-==============================
-
-  commit 4fa0a44b7f0a9b37ef5fcbcb07ad6e45dd50b265
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Wed May 4 14:53:14 2011 -0700
-  
-    actually require POE as a runtime prereq, thanks Bazerka@irc 
-
-=======================================
-2011-05-04 14:37:11 -0700 release-1.007
-=======================================
-
-  commit 5ada288a8ab2b24c6472e5a8fb3f43958fa22445
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Wed May 4 14:37:11 2011 -0700
-  
-    New CPAN release of POE-Component-SSLify - v1.007
-
-    Released: 2011-05-04 21:36:32 UTC
-
-    Revert the ENGINE load logic added in 1.004 because it was causing
-    coredumps on netbsd ( thanks BINGOS! )
-
-    Add the constant LOAD_SSL_ENGINES sub if you need to load the ssl
-    engines
-
-    Tweak the renegotiate tests to be more tolerant of failures, thanks
-    RCAPUTO - RT#66741
-
-  commit 958b153b6d09773230336793b1a3f2f2848a55dc
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Wed May 4 14:34:15 2011 -0700
-  
-    rename some POD for pod::coverage tests
-
-  commit 125745d00aa051e13a18ac207a618c50913bbd57
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Wed May 4 14:21:22 2011 -0700
-  
-    rewrite the renegotiate tests in hope of fixing RT#66741
-
-  commit 393337624aef50602f4f2e9ff4ec412e1cbe7d76
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Wed May 4 14:02:59 2011 -0700
-  
-    fix netbsd coredumps by not loading ENGINEs, reported by BINGOS 
-
-=======================================
-2011-04-21 17:22:30 -0700 release-1.006
-=======================================
-
-  commit 0096f51336380c31d99e87cf93a63ed650e60aff
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Thu Apr 21 17:22:30 2011 -0700
-  
-    New CPAN release of POE-Component-SSLify - v1.006
-
-    Released: 2011-04-22 00:21:51 UTC
-
-    Fix a heinous bug where openssl will randomly+reliably close a
-    connection ( thanks MIRE )
-
-    Tweak the hook tests so they test the case where no data is sent over
-    the connection
-
-    Tweak the connfail tests so they work better
-
-  commit df65edee2621f55f347db2c70d779e44d93b87d2
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Thu Apr 21 17:16:15 2011 -0700
-  
-    mire@irc is now MIRE, congrats
-
-  commit 853522b575570c997d3c8ff70c530cd45cde1e40
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Thu Apr 21 14:54:08 2011 -0700
-  
-    tweak mires test a bit
-
-  commit e745765e01f9c07e0b195b2c49be40bea2e916f4
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Thu Apr 21 08:28:42 2011 -0700
-  
-    start of work on mire's testcase
-
-  commit 15e3d473b68e6e0ac36673bbc71b7125fd49ed2f
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Thu Apr 21 00:03:23 2011 -0700
-  
-    add mire test to be worked into a proper AUTHOR test
-
-  commit ad5c8c95dce50c051d8c54ade4c90b45f49103c3
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Wed Apr 20 20:44:15 2011 -0700
-  
-    update changelog for the fixes
-
-  commit ed9e2b33c10572df76e790ffad68d3d7ecb820f9
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Wed Apr 20 20:11:17 2011 -0700
-  
-    fix random SSL failures, spotted by mire
-
-  commit 5a9b28e587a3dace6ed71bd93691215b47cbc348
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Wed Apr 20 20:09:00 2011 -0700
-  
-    tweak the connfail tests and make the server test work
-
-  commit 806d4c4df5ca108c8cfacbb19babcfebc8b05cdc
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Wed Apr 20 20:08:18 2011 -0700
-  
-    tweak the hook tests to cover the case where there is no data sent
-    over the wire 
-
-=======================================
-2011-03-10 00:56:13 -0700 release-1.005
-=======================================
-
-  commit bc1a271e1f6e597f42cf03723ef6525a21281bea
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Thu Mar 10 00:56:13 2011 -0700
-  
-    New CPAN release of POE-Component-SSLify - v1.005
-
-    Released: 2011-03-10 07:55:30 UTC
-
-    Fix the connfail tests due to an incorrect assumption regards socket
-    close value, thanks CPANTesters!
-
-  commit d8b4c0e354acf683f17fd63186810226e101b54e
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Thu Mar 10 00:54:05 2011 -0700
-  
-    fix an incorrect assumption in the connfail tests, thanks CPANTesters 
-
-=======================================
-2011-03-08 16:43:43 -0700 release-1.004
-=======================================
-
-  commit 073ae0a4eb74e7c7bd24db3717653ee5764db6bb
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Tue Mar 8 16:43:43 2011 -0700
-  
-    New CPAN release of POE-Component-SSLify - v1.004
-
-    Released: 2011-03-08 23:39:03 UTC
-
-    We now load certificate files via CTX_use_certificate_chain_file(),
-    thanks Zephaniah E. Loss-Cutler-Hull <warp-spam_perl@aehallh.com>
-
-    OpenSSL docs suggest it -
-    http://www.openssl.org/docs/ssl/SSL_CTX_use_certificate.html#NOTES
-
-    PLEASE yell at me if you need the old functionality - the docs
-    suggest this is the "better" way to do it...
-
-    Add the ability to pass a subref to call on connection/negotiation
-    success, thanks Zephaniah E. Loss-Cutler-Hull
-    <warp-spam_perl@aehallh.com>
-
-    NOTE: This will not work if you do renegotiation or any other zany
-    SSL stuff!
-
-    Add the SSLify_GetStatus function to get the status of the connection
-
-    After staring at the Net::SSLeay/OpenSSL docs for a while I realized
-    we were missing support for sslv23 version, added!
-
-    After some investigation, we now load all default ENGINEs for OpenSSL
-    on startup, as it might provide a performance boost
-
-  commit f9f664939980fdd646c3331815c7c9935e9ee248
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Tue Mar 8 16:29:27 2011 -0700
-  
-    yet more POD tweaks
-
-  commit 79116f5515997c0353659c5611d943f73e6a3d58
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Tue Mar 8 16:23:19 2011 -0700
-  
-    add more POD about callback and make the status a boolean value
-
-  commit fb1c1a1c135a20fea4f749548d6d34cab1735ff9
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Tue Mar 8 14:43:41 2011 -0700
-  
-    fix some nits reported by PerlCritic
-
-  commit 602dac644a11b2331217895056e034d9226310b4
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Tue Mar 8 13:27:32 2011 -0700
-  
-    tweak testsuite
-
-  commit 7ad6bbbc8e1d95f5dd4fbdb4df957e32eb31519c
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Tue Mar 8 12:45:28 2011 -0700
-  
-    more doc tweaks
-
-  commit 5079fc8f5c3e4a9275f5fab7a80a10910800f3e1
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Tue Mar 8 12:33:10 2011 -0700
-  
-    add more connect fail tests
-
-  commit 9700e8dd8f22d73bfeca5b2e603ad3eb85cb310c
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Tue Mar 8 12:32:56 2011 -0700
-  
-    massive doc revamp
-
-  commit 13dde50f6a039812fb8b335c0318ccf467b2331e
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Tue Mar 8 00:23:22 2011 -0700
-  
-    add connfail test
-
-  commit d96b80b1a4c1876d82e217677d0cdf33b1f68160
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Mon Mar 7 17:14:38 2011 -0700
-  
-    add note about renegotiation and connection function
-
-  commit 4df07a720ee9ad46fc39bb4fd39ad46db3c6a710
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Mon Mar 7 16:56:44 2011 -0700
-  
-    add testcase for connref hooks
-
-  commit def0826f81ef2825c9be2c3a9aa2e0a3588c5489
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Mon Mar 7 16:55:24 2011 -0700
-  
-    add GetStatus and finalize connref stuff
-
-  commit f5b8e4ae8016715cf5d9385d5771dac8dbe59abd
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Mon Mar 7 16:13:03 2011 -0700
-  
-    more fixes and add hook testcase
-
-  commit 3e003c92bc922091587960de5a02c5bdfec36c8c
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Mon Mar 7 16:04:00 2011 -0700
-  
-    add actual hook functionality for connection done
-
-  commit 95ea76ec6e5a93cc8ff8b99df5a9b1558db27984
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Mon Mar 7 15:31:27 2011 -0700
-  
-    initial commit for hook work
-
-  commit d7914f5f0a6d9cd3065c23ab70f91d9912eba084
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Mon Mar 7 14:58:09 2011 -0700
-  
-    use CTX_use_certificate_chain_file 
-
-=======================================
-2011-02-28 08:52:48 -0700 release-1.003
-=======================================
-
-  commit dba0e05d424aeeb766bf887c1e731593777a6b5b
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Mon Feb 28 08:52:48 2011 -0700
-  
-    New CPAN release of POE-Component-SSLify - v1.003
-
-    Released: 2011-02-28 15:52:24 UTC
-
-    Add $IGNORE_SSL_ERRORS to ignore certain SSL errors, thanks MNUNBERG
-    - RT#66130
-
-    Remove prereq on vars.pm as it's obsolete
-
-  commit 367645dabcbc3ca12aae0c32d7a2e8847274865e
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Mon Feb 28 08:51:38 2011 -0700
-  
-    add note about MSWin32
-
-  commit 8dfc5acbbad45910fc93a6688661fb5c46cffd59
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Mon Feb 28 08:46:09 2011 -0700
-  
-    add IGNORE_SSL_ERRORS, thanks MNUNBERG
-
-  commit cf26ebeb385b4a44dd20a1fa877905e3b948fd74
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Mon Feb 21 00:01:02 2011 -0700
-  
-    add explicit Net::SSLeay version req 
-
-=======================================
-2011-02-19 21:24:02 -0700 release-1.002
-=======================================
-
-  commit e20a8d5cd43978e14b22d50b884edc14f06a72c6
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Feb 19 21:24:02 2011 -0700
-  
-    New CPAN release of POE-Component-SSLify - v1.002
-
-    Released: 2011-02-20 04:23:48 UTC
-
-    Add SSLify_GetSSL to get the Net::SSLeay object, thanks mordy@irc!
-
-  commit b4269ddff7e04f09a8f304891469fbdc962e740c
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Sat Feb 19 21:19:21 2011 -0700
-  
-    Add SSLify_GetSSL function, thanks mordy 
-
-=======================================
-2011-02-13 11:11:22 -0700 release-1.001
-=======================================
-
-  commit 6f65b4c33c787f306ec32033f6445be4b5b59516
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Sun Feb 13 11:11:22 2011 -0700
-  
-    New CPAN release of POE-Component-SSLify - v1.001
-
-    Released: 2011-02-13 18:11:07 UTC
-
-    Fixed the Net::SSLeay import code, thanks CPANTesters!
-
-  commit 1627d797b6cd2a8a42de31312f699a5e514494ae
-  Author: Apocalypse <perl@0ne.us>
-  Date:   Sun Feb 13 11:10:05 2011 -0700
-  
-    use string eval instead of block eval, thanks CPANTesters 
-
-===================================
-End of changes in the last 365 days
-===================================
+==================================================
+Changes from 2013-11-12 00:00:00 +0000 to present.
+==================================================
+
+------------------------------------------
+version 1.009 at 2014-11-12 00:41:28 +0000
+------------------------------------------
+
+  Change: b717e75279e2b28ebd4b0d8ab0ce48cd7540998f
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 16:41:22 +0000
+
+    dont test superbig tests! 
+
+  Change: e1aed14b94e9d1852b08208895262726d629fe3c
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 15:51:56 +0000
+
+    tweak tests and add more large size tests 
+
+  Change: 0d1324143216eb9cd1cf07ba0c2ac814a268cf6f
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 14:29:58 +0000
+
+    fix changes 
+
+  Change: 7621d86c76c95fb7495717a4d4e0b912cfe51b97
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 14:27:39 +0000
+
+    add test to try and track down RT#58243 
+
+  Change: 3db8619e947a14554c1a04ec8a8c5c0cac19acb5
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 14:10:54 +0000
+
+    rename tests for clarity 
+
+  Change: ffbe1df7efa2ab2fd03230a44bdd14f0300bad5e
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 14:08:06 +0000
+
+    use Test::FailWarnings and migrate to done_testing 
+
+  Change: f6a84928364e3a57e71733620bcbe8544a8ee6f2
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 14:00:30 +0000
+
+    tweaks to POD and stuff to pass tests 
+
+  Change: cd37d35eacaae2505f7d657b15d6e5820bf4f3fe
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-09 01:19:19 +0000
+
+    mailmap 
+
+================================================
+Plus 9 releases after 2013-11-12 00:00:00 +0000.
+================================================

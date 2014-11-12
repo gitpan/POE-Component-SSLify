@@ -2,7 +2,7 @@
 #
 # This file is part of POE-Component-SSLify
 #
-# This software is copyright (c) 2011 by Apocalypse.
+# This software is copyright (c) 2014 by Apocalypse.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
@@ -10,25 +10,15 @@
 use strict; use warnings;
 use strict; use warnings;
 
-# this tests the connection fail hook on the server-side
+# this tests the connection fail hook on the client-side
 
-my $numtests;
-BEGIN {
-	$numtests = 9;
-
-	eval "use Test::NoWarnings";
-	if ( ! $@ ) {
-		# increment by one
-		$numtests++;
-	}
-}
-
-use Test::More tests => $numtests;
+use Test::FailWarnings;
+use Test::More 1.001002; # new enough for sanity in done_testing()
 
 use POE 1.267;
 use POE::Component::Client::TCP;
 use POE::Component::Server::TCP;
-use POE::Component::SSLify qw/Server_SSLify SSLify_Options SSLify_GetSocket SSLify_GetStatus/;
+use POE::Component::SSLify qw/Client_SSLify SSLify_GetSocket SSLify_GetStatus/;
 
 # TODO rewrite this to use Test::POE::Server::TCP and stuff :)
 
@@ -48,35 +38,21 @@ POE::Component::Server::TCP->new
 	ClientConnected		=> sub
 	{
 		ok(1, 'SERVER: accepted');
-	},
-	ClientPreConnect	=> sub
-	{
-		eval { SSLify_Options('mylib/example.key', 'mylib/example.crt') };
-		eval { SSLify_Options('../mylib/example.key', '../mylib/example.crt') } if ($@);
-		ok(!$@, "SERVER: SSLify_Options $@");
 
-		my $socket = eval { Server_SSLify( $_[ARG0], sub {
-			my( $socket, $status, $errval ) = @_;
-
-			pass( "SERVER: Got callback hook" );
-			is( $status, 0, "SERVER: Status received from callback is ERR - $errval" );
-
-			$poe_kernel->post( 'myserver' => 'shutdown');
-		} ) };
-		ok(!$@, "SERVER: Server_SSLify $@");
-		is( SSLify_GetStatus( $socket ), -1, "SERVER: SSLify_GetStatus is pending" );
-
-		return ($socket);
+		# purposefully send garbage so we screw up the ssl connect on the client-side
+		$_[HEAP]->{client}->put( 'garbage in, garbage out' );
 	},
 	ClientDisconnected	=> sub
 	{
 		ok(1, 'SERVER: client disconnected');
+		$_[KERNEL]->post( 'myserver' => 'shutdown');
 	},
 	ClientInput		=> sub
 	{
 		my ($kernel, $heap, $line) = @_[KERNEL, HEAP, ARG0];
 
-		die "Should have never got any input from the client!";
+		# purposefully send garbage so we screw up the ssl connect on the client-side
+		$heap->{client}->put( 'garbage in, garbage out' );
 	},
 	ClientError	=> sub
 	{
@@ -97,16 +73,27 @@ POE::Component::Client::TCP->new
 	Connected	=> sub
 	{
 		ok(1, 'CLIENT: connected');
+	},
+	PreConnect	=> sub
+	{
+		my $socket = eval { Client_SSLify($_[ARG0], sub {
+			my( $socket, $status, $errval ) = @_;
 
-		# purposefully send garbage so we screw up the ssl connect on the client-side
-		$_[HEAP]->{server}->put( 'garbage in, garbage out' );
+			pass( "CLIENT: Got callback hook" );
+			is( $status, 0, "CLIENT: Status received from callback is ERR - $errval" );
+
+			$poe_kernel->post( 'myclient' => 'shutdown' );
+		}) };
+		ok(!$@, "CLIENT: Client_SSLify $@");
+		is( SSLify_GetStatus( $socket ), -1, "CLIENT: SSLify_GetStatus is pending" );
+
+		return ($socket);
 	},
 	ServerInput	=> sub
 	{
 		my ($kernel, $heap, $line) = @_[KERNEL, HEAP, ARG0];
 
-		# purposefully send garbage so we screw up the ssl connect on the client-side
-		$heap->{server}->put( 'garbage in, garbage out' );
+		die "Should have never got any input from the server!";
 	},
 	ServerError	=> sub
 	{
@@ -120,6 +107,4 @@ POE::Component::Client::TCP->new
 
 $poe_kernel->run();
 
-pass( 'shut down sanely' );
-
-exit 0;
+done_testing;

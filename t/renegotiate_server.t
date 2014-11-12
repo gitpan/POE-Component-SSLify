@@ -2,7 +2,7 @@
 #
 # This file is part of POE-Component-SSLify
 #
-# This software is copyright (c) 2011 by Apocalypse.
+# This software is copyright (c) 2014 by Apocalypse.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
@@ -11,35 +11,15 @@ use strict; use warnings;
 use strict; use warnings;
 
 # Thanks to ASCENT for this test!
-# This test adds renegotiation to the connection from client-side
-# Since this is not supported on all platforms, it's marked TODO and adds custom logic
-# to make sure it doesn't FAIL if it's not supported.
+# This test adds renegotiation to the connection from server-side
 
-# this version of the test doesn't work as reported in http://rt.cpan.org/Public/Bug/Display.html?id=66741
-# renamed it to this version for posterity and in case I need it for future analysis...
-
-#my $numtests;
-#BEGIN {
-#	$numtests = 23;
-#
-#	eval "use Test::NoWarnings";
-#	if ( ! $@ ) {
-#		# increment by one
-#		$numtests++;
-#	}
-#}
-
-#use Test::More tests => $numtests;
-use Test::More;
-BEGIN {
-	plan skip_all => "AUTHOR TEST";
-}
+use Test::FailWarnings;
+use Test::More 1.001002; # new enough for sanity in done_testing()
 
 use POE 1.267;
 use POE::Component::Client::TCP;
 use POE::Component::Server::TCP;
 use POE::Component::SSLify qw/Client_SSLify Server_SSLify SSLify_Options SSLify_GetCipher SSLify_ContextCreate SSLify_GetSocket SSLify_GetSSL/;
-use Net::SSLeay qw/ERROR_WANT_READ ERROR_WANT_WRITE/;
 
 # TODO rewrite this to use Test::POE::Server::TCP and stuff :)
 
@@ -61,6 +41,7 @@ POE::Component::Server::TCP->new
 	ClientConnected		=> sub
 	{
 		ok(1, 'SERVER: accepted');
+		$_[HEAP]->{client}->put("ping");
 	},
 	ClientDisconnected	=> sub
 	{
@@ -84,22 +65,23 @@ POE::Component::Server::TCP->new
 	},
 	ClientInput		=> sub
 	{
-		my ($kernel, $heap, $request) = @_[KERNEL, HEAP, ARG0];
+		my ($kernel, $heap, $line) = @_[KERNEL, HEAP, ARG0];
 
-		## At this point, connection MUST be encrypted.
-		my $cipher = SSLify_GetCipher($heap->{client}->get_output_handle);
-		ok($cipher ne '(NONE)', "SERVER: SSLify_GetCipher: $cipher");
+		if ($line eq 'pong') {
+			ok(1, "SERVER: recv: $line");
 
-		if ($request eq 'ping')
-		{
-			ok(1, "SERVER: recv: $request");
-			$heap->{client}->put("pong");
-		}
-		elsif ($request eq 'ping2')
-		{
-			ok(1, "SERVER: recv: $request");
+			## At this point, connection MUST be encrypted.
+			my $cipher = SSLify_GetCipher($heap->{client}->get_output_handle);
+			ok($cipher ne '(NONE)', "SERVER: SSLify_GetCipher: $cipher");
+
+			Net::SSLeay::renegotiate( SSLify_GetSSL( $heap->{client}->get_output_handle ) );
+
+			$heap->{client}->put("ping2");
+		} elsif ($line eq 'pong2') {
 			$server_ping2++;
-			$heap->{client}->put("pong2");
+			$kernel->yield( 'shutdown' );
+		} else {
+			die "Unknown line from CLIENT: $line";
 		}
 	},
 	ClientError	=> sub
@@ -112,7 +94,7 @@ POE::Component::Server::TCP->new
 		$error = "Normal disconnection" unless $error;
 		my $msg = "Got SERVER $syscall error $errno: $error";
 		unless ( $syscall eq 'read' and $errno == 0 ) {
-			fail( $msg );
+#			fail( $msg );
 		} else {
 			diag( $msg ) if $ENV{TEST_VERBOSE};
 		}
@@ -128,8 +110,6 @@ POE::Component::Client::TCP->new
 	Connected	=> sub
 	{
 		ok(1, 'CLIENT: connected');
-
-		$_[HEAP]->{server}->put("ping");
 	},
 	PreConnect	=> sub
 	{
@@ -148,40 +128,19 @@ POE::Component::Client::TCP->new
 	{
 		my ($kernel, $heap, $line) = @_[KERNEL, HEAP, ARG0];
 
-		## At this point, connection MUST be encrypted.
-		my $cipher = SSLify_GetCipher($heap->{server}->get_output_handle);
-		ok($cipher ne '(NONE)', "CLIENT: SSLify_GetCipher: $cipher");
-
-		if ($line eq 'pong')
-		{
+		if ($line eq 'ping') {
 			ok(1, "CLIENT: recv: $line");
 
-			# Skip 2 Net::SSLeay::renegotiate() tests on FreeBSD because of
-			# http://security.freebsd.org/advisories/FreeBSD-SA-09:15.ssl.asc
-			TODO: {
-				local $TODO = "Net::SSLeay::renegotiate() does not work on all platforms";
+			## At this point, connection MUST be encrypted.
+			my $cipher = SSLify_GetCipher($heap->{server}->get_output_handle);
+			ok($cipher ne '(NONE)', "CLIENT: SSLify_GetCipher: $cipher");
 
-				## Force SSL renegotiation
-				my $ssl = SSLify_GetSSL( $heap->{server}->get_output_handle );
-				my $reneg_num = Net::SSLeay::num_renegotiations($ssl);
-
-				ok(1 == Net::SSLeay::renegotiate($ssl), 'CLIENT: SSL renegotiation');
-				my $handshake = Net::SSLeay::do_handshake($ssl);
-				my $err = Net::SSLeay::get_error($ssl, $handshake);
-
-				## 1 == Successful handshake, ERROR_WANT_(READ|WRITE) == non-blocking.
-				ok($handshake == 1 || $err == ERROR_WANT_READ || $err == ERROR_WANT_WRITE, 'CLIENT: SSL handshake');
-				ok($reneg_num < Net::SSLeay::num_renegotiations($ssl), 'CLIENT: Increased number of negotiations');
-			}
-
-			$heap->{server}->put('ping2');
-		}
-
-		elsif ($line eq 'pong2')
-		{
-			ok(1, "CLIENT: recv: $line");
+			$_[HEAP]->{server}->put("pong");
+		} elsif ( $line eq 'ping2' ) {
 			$client_ping2++;
-			$kernel->yield('shutdown');
+			$_[HEAP]->{server}->put("pong2");
+		} else {
+			die "Unknown line from SERVER: $line";
 		}
 	},
 	ServerError	=> sub
@@ -190,28 +149,14 @@ POE::Component::Client::TCP->new
 		# The default PoCo::Client::TCP handler will throw a warning, which causes Test::NoWarnings to FAIL :(
 		my ($syscall, $errno, $error) = @_[ ARG0..ARG2 ];
 
-		# TODO are there other "errors" that is harmless?
 		$error = "Normal disconnection" unless $error;
 		my $msg = "Got CLIENT $syscall error $errno: $error";
-		unless ( $syscall eq 'read' and $errno == 0 ) {
-			fail( $msg );
-		} else {
-			diag( $msg ) if $ENV{TEST_VERBOSE};
-		}
+		diag( $msg ) if $ENV{TEST_VERBOSE};
 	},
 );
 
 $poe_kernel->run();
 
-# Add extra pass() to make the test harness happy if renegotiate did not work
-if ( ! $server_ping2 ) {
-	local $TODO = "Net::SSLeay::renegotiate() does not work on all platforms";
-	fail( "SERVER: Failed SSL renegotiation" );
-}
-if ( ! $client_ping2 ) {
-	local $TODO = "Net::SSLeay::renegotiate() does not work on all platforms";
-	fail( "CLIENT: Failed SSL renegotiation" );
-}
 if ( ! $server_ping2 or ! $client_ping2 ) {
 	diag( "WARNING: Your platform/SSL library does not support renegotiation of the SSL socket." );
 	diag( "This test harness detected that trying to renegotiate resulted in a disconnected socket." );
@@ -219,6 +164,4 @@ if ( ! $server_ping2 or ! $client_ping2 ) {
 	diag( "Please talk with the author to figure out if this issue can be worked around, thank you!" );
 }
 
-pass( 'shut down sanely' );
-
-exit 0;
+done_testing;

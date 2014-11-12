@@ -2,7 +2,7 @@
 #
 # This file is part of POE-Component-SSLify
 #
-# This software is copyright (c) 2011 by Apocalypse.
+# This software is copyright (c) 2014 by Apocalypse.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
@@ -10,21 +10,10 @@
 use strict; use warnings;
 use strict; use warnings;
 
-# Thanks to ASCENT for this test!
-# This tests the basic functionality of sslify on client/server side
+# This is an extension of the simple.t test to test for large responses
 
-my $numtests;
-BEGIN {
-	$numtests = 16;
-
-	eval "use Test::NoWarnings";
-	if ( ! $@ ) {
-		# increment by one
-		$numtests++;
-	}
-}
-
-use Test::More tests => $numtests;
+use Test::FailWarnings;
+use Test::More 1.001002; # new enough for sanity in done_testing()
 
 use POE 1.267;
 use POE::Component::Client::TCP;
@@ -34,6 +23,9 @@ use POE::Component::SSLify qw/Client_SSLify Server_SSLify SSLify_Options SSLify_
 # TODO rewrite this to use Test::POE::Server::TCP and stuff :)
 
 my $port;
+
+# length $bigpacket = 2079998 ( just need to go over 42643B as reported in RT#58243 but... =)
+my $bigpacket = join( '-', ('a' .. 'z') x 10000, ('A' .. 'Z') x 10000 ) x 2;
 
 POE::Component::Server::TCP->new
 (
@@ -74,14 +66,14 @@ POE::Component::Server::TCP->new
 	{
 		my ($kernel, $heap, $line) = @_[KERNEL, HEAP, ARG0];
 
-		if ( $line eq 'ping' ) {
-			ok(1, "SERVER: recv: $line");
+		if ( $line eq $bigpacket ) {
+			ok(1, "SERVER: recv BIGPACKET");
 
 			## At this point, connection MUST be encrypted.
 			my $cipher = SSLify_GetCipher($heap->{client}->get_output_handle);
 			ok($cipher ne '(NONE)', "SERVER: SSLify_GetCipher: $cipher");
 
-			$heap->{client}->put("pong");
+			$heap->{client}->put($bigpacket);
 		} else {
 			die "Unknown line from CLIENT: $line";
 		}
@@ -113,7 +105,7 @@ POE::Component::Client::TCP->new
 	{
 		ok(1, 'CLIENT: connected');
 
-		$_[HEAP]->{server}->put("ping");
+		$_[HEAP]->{server}->put($bigpacket);
 	},
 	PreConnect	=> sub
 	{
@@ -132,8 +124,8 @@ POE::Component::Client::TCP->new
 	{
 		my ($kernel, $heap, $line) = @_[KERNEL, HEAP, ARG0];
 
-		if ($line eq 'pong') {
-			ok(1, "CLIENT: recv: $line");
+		if ($line eq $bigpacket) {
+			ok(1, "CLIENT: recv BIGPACKET");
 
 			## At this point, connection MUST be encrypted.
 			my $cipher = SSLify_GetCipher($heap->{server}->get_output_handle);
@@ -164,6 +156,4 @@ POE::Component::Client::TCP->new
 
 $poe_kernel->run();
 
-pass( 'shut down sanely' );
-
-exit 0;
+done_testing;

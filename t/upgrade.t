@@ -2,7 +2,7 @@
 #
 # This file is part of POE-Component-SSLify
 #
-# This software is copyright (c) 2011 by Apocalypse.
+# This software is copyright (c) 2014 by Apocalypse.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
@@ -12,18 +12,8 @@ use strict; use warnings;
 
 # This tests in-situ sslification ( upgrade a non-ssl socket to ssl )
 
-my $numtests;
-BEGIN {
-	$numtests = 18;
-
-	eval "use Test::NoWarnings";
-	if ( ! $@ ) {
-		# increment by one
-		$numtests++;
-	}
-}
-
-use Test::More tests => $numtests;
+use Test::FailWarnings;
+use Test::More 1.001002; # new enough for sanity in done_testing()
 
 use POE 1.267;
 use POE::Component::Client::TCP;
@@ -188,6 +178,4 @@ POE::Component::Client::TCP->new
 
 $poe_kernel->run();
 
-pass( 'shut down sanely' );
-
-exit 0;
+done_testing;

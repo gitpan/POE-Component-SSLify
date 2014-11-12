@@ -2,7 +2,7 @@
 #
 # This file is part of POE-Component-SSLify
 #
-# This software is copyright (c) 2011 by Apocalypse.
+# This software is copyright (c) 2014 by Apocalypse.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
@@ -12,18 +12,8 @@ use strict; use warnings;
 
 # This tests the connection OK hook on both server/client
 
-my $numtests;
-BEGIN {
-	$numtests = 19;
-
-	eval "use Test::NoWarnings";
-	if ( ! $@ ) {
-		# increment by one
-		$numtests++;
-	}
-}
-
-use Test::More tests => $numtests;
+use Test::FailWarnings;
+use Test::More 1.001002; # new enough for sanity in done_testing()
 
 use POE 1.267;
 use POE::Component::Client::TCP;
@@ -80,12 +70,7 @@ POE::Component::Server::TCP->new
 	{
 		my ($kernel, $heap, $line) = @_[KERNEL, HEAP, ARG0];
 
-		if ( $line ne 'ping' ) {
-			die "Unknown line from CLIENT: $line";
-		} else {
-			ok(1, "SERVER: recv: $line");
-			$_[HEAP]->{client}->put("pong");
-		}
+		die "Should have never got any input from the client!";
 	},
 	ClientError	=> sub
 	{
@@ -113,20 +98,21 @@ POE::Component::Client::TCP->new
 	Connected	=> sub
 	{
 		ok(1, 'CLIENT: connected');
-		$_[HEAP]->{server}->put("ping");
 	},
 	PreConnect	=> sub
 	{
 		my $socket = eval { Client_SSLify($_[ARG0], sub {
 			my( $socket, $status, $errval ) = @_;
 
-			pass( "CLIENT: Got callback hook status" );
+			pass( "CLIENT: Got callback hook" );
 			is( $status, 1, "CLIENT: Status received from callback is OK" );
 
 			## At this point, connection MUST be encrypted.
 			my $cipher = SSLify_GetCipher($socket);
 			ok($cipher ne '(NONE)', "CLIENT: SSLify_GetCipher: $cipher");
 			ok( SSLify_GetStatus($socket) == 1, "CLIENT: SSLify_GetStatus is done" );
+
+			$poe_kernel->post( 'myclient' => 'shutdown' );
 		}) };
 		ok(!$@, "CLIENT: Client_SSLify $@");
 		ok( SSLify_GetStatus($socket) == -1, "CLIENT: SSLify_GetStatus is pending" );
@@ -137,12 +123,7 @@ POE::Component::Client::TCP->new
 	{
 		my ($kernel, $heap, $line) = @_[KERNEL, HEAP, ARG0];
 
-		if ( $line ne 'pong' ) {
-			die "Unknown line from CLIENT: $line";
-		} else {
-			ok(1, "CLIENT: recv: $line");
-			$kernel->yield('shutdown');
-		}
+		die "Should have never got any input from the server!";
 	},
 	ServerError	=> sub
 	{
@@ -163,6 +144,4 @@ POE::Component::Client::TCP->new
 
 $poe_kernel->run();
 
-pass( 'shut down sanely' );
-
-exit 0;
+done_testing;
