@@ -3,8 +3,81 @@ Changes from 2013-11-12 00:00:00 +0000 to present.
 ==================================================
 
 ------------------------------------------
-version 1.009 at 2014-11-12 00:41:28 +0000
+version 1.010 at 2014-11-12 06:13:44 +0000
 ------------------------------------------
+
+  Change: f8043053bd401402979e7161d2fcc31f8184cb3b
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 22:13:38 +0000
+
+    satisfy perlcritic... 
+
+  Change: c0ce9919c362c501fbe2487b718e68e5a7e1f038
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 21:50:17 +0000
+
+    add website link about same write issue 
+
+  Change: 3d8fa3c965241a7bc6b9b229d56863823dab02f5
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 21:46:21 +0000
+
+    tweak changes header 
+
+  Change: 26ef9be50cd5069bfe938fc41da7630ef0d5a739
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 21:41:59 +0000
+
+    clamp the writes 
+
+  Change: cae051e4f8c5c6368b9112a4fdc94f75b20ccf0d
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 21:41:07 +0000
+
+    activate superbig tests for automated 
+
+  Change: 68ffe2c85d5f250b02b14e16da8fc973dfb259aa
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 21:30:21 +0000
+
+    add ssleay info test 
+
+  Change: 200d56da2705d8bb5dedc384a8f7694aba331053
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 16:52:04 +0000
+
+    fix damn tabs 
+
+------------------------------------------
+version 1.009 at 2014-11-12 00:45:19 +0000
+------------------------------------------
+
+  Change: 89e7cf553d93fe61a3c2eb9240f027b87d80954d
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 16:45:19 +0000
+
+    New CPAN release of POE-Component-SSLify - v1.009
+
+    - Updates to the auto-generated files
+
+    - Tweaked the testsuite to use done_testing() for sanity, RT#66741
+    (thanks
+
+    RCAPUTO!)
+
+    - Use Test::FailWarnings in the testsuite in place of
+    Test::NoWarnings
+
+    (DAGOLDEN++)
+
+    - Add t/simple_large.t to try and track down RT#58243 (thanks Johan!)
+
+    - Added a boatload of tests to try and track down RT#95071 (thanks
+    Joe!)
+
+    [STATISTICS]
+
+    - code churn: 27 files changed, 2160 insertions(+), 1503 deletions(-) 
 
   Change: b717e75279e2b28ebd4b0d8ab0ce48cd7540998f
   Author: Apocalypse <APOCAL@cpan.org>

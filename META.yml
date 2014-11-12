@@ -35,13 +35,13 @@ no_index:
 provides:
   POE::Component::SSLify:
     file: lib/POE/Component/SSLify.pm
-    version: '1.009'
+    version: '1.010'
   POE::Component::SSLify::ClientHandle:
     file: lib/POE/Component/SSLify/ClientHandle.pm
-    version: '1.009'
+    version: '1.010'
   POE::Component::SSLify::ServerHandle:
     file: lib/POE/Component/SSLify/ServerHandle.pm
-    version: '1.009'
+    version: '1.010'
 requires:
   Exporter: '0'
   IO::Handle: '1.28'
@@ -59,7 +59,7 @@ resources:
   homepage: https://github.com/apocalypse/perl-poe-sslify
   license: http://dev.perl.org/licenses/
   repository: https://github.com/apocalypse/perl-poe-sslify.git
-version: '1.009'
+version: '1.010'
 x_BuiltWith:
   modules:
     CPAN::Meta: '2.142690'
@@ -529,7 +529,7 @@ x_Dist_Zilla:
         Dist::Zilla::Plugin::Git::Tag:
           branch: ~
           signed: '0'
-          tag: release-1.009
+          tag: release-1.010
           tag_format: release-%v
           tag_message: 'Tagged release-%v'
           time_zone: local

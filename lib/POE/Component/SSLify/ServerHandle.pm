@@ -8,7 +8,7 @@
 #
 use strict; use warnings;
 package POE::Component::SSLify::ServerHandle;
-$POE::Component::SSLify::ServerHandle::VERSION = '1.009';
+$POE::Component::SSLify::ServerHandle::VERSION = '1.010';
 our $AUTHORITY = 'cpan:APOCAL';
 
 # ABSTRACT: Server-side handle for SSLify
@@ -166,6 +166,10 @@ sub WRITE {
 		$offset = 0;
 	}
 
+	# Thanks to RT#95071 and RT#58243 we need to clamp the length to the TLS 16K limit
+	# seems like the same thing happened to https://www.mail-archive.com/openssl-users@openssl.org/msg28151.html
+	$len = 16_384 if $len > 16_384;
+
 	# We count the number of characters written to the socket
 	my $wrote_len = Net::SSLeay::write( $self->{'ssl'}, substr( $buf, $offset, $len ) );
 
@@ -271,7 +275,7 @@ POE::Component::SSLify::ServerHandle - Server-side handle for SSLify
 
 =head1 VERSION
 
-  This document describes v1.009 of POE::Component::SSLify::ServerHandle - released November 11, 2014 as part of POE-Component-SSLify.
+  This document describes v1.010 of POE::Component::SSLify::ServerHandle - released November 11, 2014 as part of POE-Component-SSLify.
 
 =head1 DESCRIPTION
 

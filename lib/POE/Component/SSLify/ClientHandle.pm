@@ -8,7 +8,7 @@
 #
 use strict; use warnings;
 package POE::Component::SSLify::ClientHandle;
-$POE::Component::SSLify::ClientHandle::VERSION = '1.009';
+$POE::Component::SSLify::ClientHandle::VERSION = '1.010';
 our $AUTHORITY = 'cpan:APOCAL';
 
 # ABSTRACT: Client-side handle for SSLify
@@ -69,7 +69,7 @@ POE::Component::SSLify::ClientHandle - Client-side handle for SSLify
 
 =head1 VERSION
 
-  This document describes v1.009 of POE::Component::SSLify::ClientHandle - released November 11, 2014 as part of POE-Component-SSLify.
+  This document describes v1.010 of POE::Component::SSLify::ClientHandle - released November 11, 2014 as part of POE-Component-SSLify.
 
 =head1 DESCRIPTION
 

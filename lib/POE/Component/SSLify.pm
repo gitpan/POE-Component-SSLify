@@ -8,8 +8,8 @@
 #
 use strict; use warnings;
 package POE::Component::SSLify;
-# git description: release-1.008-8-gb717e75
-$POE::Component::SSLify::VERSION = '1.009';
+# git description: release-1.009-7-gf804305
+$POE::Component::SSLify::VERSION = '1.010';
 our $AUTHORITY = 'cpan:APOCAL';
 
 # ABSTRACT: Makes using SSL in the world of POE easy!
@@ -503,7 +503,7 @@ POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
 =head1 VERSION
 
-  This document describes v1.009 of POE::Component::SSLify - released November 11, 2014 as part of POE-Component-SSLify.
+  This document describes v1.010 of POE::Component::SSLify - released November 11, 2014 as part of POE-Component-SSLify.
 
 =head1 SYNOPSIS
 
@@ -1003,8 +1003,8 @@ Apocalypse <APOCAL@cpan.org>
 
 	From the PoCo::Client::HTTP code =]
 	# This code should probably become a POE::Kernel method,
-    	# seeing as it's rather baroque and potentially useful in a number
-    	# of places.
+	# seeing as it's rather baroque and potentially useful in a number
+	# of places.
 
 ASCENT also helped a lot with the nonblocking mode, without his hard work this
 module would still be stuck in the stone age :)
