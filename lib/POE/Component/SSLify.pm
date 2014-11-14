@@ -8,8 +8,8 @@
 #
 use strict; use warnings;
 package POE::Component::SSLify;
-# git description: release-1.010-4-g6795ac7
-$POE::Component::SSLify::VERSION = '1.011';
+# git description: release-1.011-1-g57b6383
+$POE::Component::SSLify::VERSION = '1.012';
 our $AUTHORITY = 'cpan:APOCAL';
 
 # ABSTRACT: Makes using SSL in the world of POE easy!
@@ -503,7 +503,7 @@ POE::Component::SSLify - Makes using SSL in the world of POE easy!
 
 =head1 VERSION
 
-  This document describes v1.011 of POE::Component::SSLify - released November 13, 2014 as part of POE-Component-SSLify.
+  This document describes v1.012 of POE::Component::SSLify - released November 14, 2014 as part of POE-Component-SSLify.
 
 =head1 SYNOPSIS
 

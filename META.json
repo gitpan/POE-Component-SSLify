@@ -67,15 +67,15 @@
    "provides" : {
       "POE::Component::SSLify" : {
          "file" : "lib/POE/Component/SSLify.pm",
-         "version" : "1.011"
+         "version" : "1.012"
       },
       "POE::Component::SSLify::ClientHandle" : {
          "file" : "lib/POE/Component/SSLify/ClientHandle.pm",
-         "version" : "1.011"
+         "version" : "1.012"
       },
       "POE::Component::SSLify::ServerHandle" : {
          "file" : "lib/POE/Component/SSLify/ServerHandle.pm",
-         "version" : "1.011"
+         "version" : "1.012"
       }
    },
    "release_status" : "stable",
@@ -94,7 +94,7 @@
          "web" : "https://github.com/apocalypse/perl-poe-sslify"
       }
    },
-   "version" : "1.011",
+   "version" : "1.012",
    "x_BuiltWith" : {
       "modules" : {
          "CPAN::Meta" : "2.142690",
@@ -698,7 +698,7 @@
                "Dist::Zilla::Plugin::Git::Tag" : {
                   "branch" : null,
                   "signed" : 0,
-                  "tag" : "release-1.011",
+                  "tag" : "release-1.012",
                   "tag_format" : "release-%v",
                   "tag_message" : "Tagged release-%v",
                   "time_zone" : "local"
