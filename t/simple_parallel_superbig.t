@@ -23,8 +23,6 @@ BEGIN {
 	}
 }
 
-local $TODO = "locks up SSLify";
-
 use POE 1.267;
 use POE::Component::Client::TCP;
 use POE::Component::Server::TCP;
@@ -36,15 +34,14 @@ my $port;
 my $replies = 0;
 
 # TODO interestingly, x3 goes over some sort of buffer size and this explodes!
-my $bigpacket = join( '-', ('a' .. 'z') x 10000, ('A' .. 'Z') x 10000 ) x 3;
-
+my $bigpacket = join( '-', ('a' .. 'z') x 10000, ('A' .. 'Z') x 10000 ) x 10;
 
 POE::Component::Server::TCP->new
 (
 	Alias			=> 'myserver',
 	Address			=> '127.0.0.1',
 	Port			=> 0,
-
+	ClientFilter		=> ['POE::Filter::Block', 'BlockSize' => length $bigpacket],
 	Started			=> sub
 	{
 		use Socket qw/sockaddr_in/;
@@ -70,7 +67,7 @@ POE::Component::Server::TCP->new
 		ok(1, 'SERVER: SSLify_GetCipher: '. SSLify_GetCipher($socket));
 
 		# We pray that IO::Handle is sane...
-		ok( SSLify_GetSocket( $socket )->blocking == 0, 'SERVER: SSLified socket is non-blocking?');
+		ok( SSLify_GetSocket( $socket )->blocking == 0, 'SERVER: SSLified socket is non-blocking?') if $^O ne 'MSWin32';
 
 		return ($socket);
 	},
@@ -110,7 +107,7 @@ POE::Component::Client::TCP->new
 	Alias		=> 'myclient',
 	RemoteAddress	=> '127.0.0.1',
 	RemotePort	=> $port,
-
+	Filter		=> ['POE::Filter::Block', 'BlockSize' => length $bigpacket],
 	Connected	=> sub
 	{
 		ok(1, 'CLIENT: connected');
@@ -126,7 +123,7 @@ POE::Component::Client::TCP->new
 		ok(1, 'CLIENT: SSLify_GetCipher: '. SSLify_GetCipher($socket));
 
 		# We pray that IO::Handle is sane...
-		ok( SSLify_GetSocket( $socket )->blocking == 0, 'CLIENT: SSLified socket is non-blocking?');
+		ok( SSLify_GetSocket( $socket )->blocking == 0, 'CLIENT: SSLified socket is non-blocking?') if $^O ne 'MSWin32';
 
 		return ($socket);
 	},

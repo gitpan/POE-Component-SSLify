@@ -1,10 +1,55 @@
 ==================================================
-Changes from 2013-11-12 00:00:00 +0000 to present.
+Changes from 2013-11-14 00:00:00 +0000 to present.
 ==================================================
 
 ------------------------------------------
-version 1.010 at 2014-11-12 06:13:44 +0000
+version 1.011 at 2014-11-14 03:06:51 +0000
 ------------------------------------------
+
+  Change: 6795ac7e0577df360e1cd094113235d12eaae9d9
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-13 19:06:41 +0000
+
+    remove TODO from superbig tests 
+
+  Change: 82379d6f23f8bbb76a03ed26fd4bdbc2af288fd2
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-13 19:01:25 +0000
+
+    dont test blocking mode on MSWin32, thanks CPANTesters and DSOLIMANO 
+
+  Change: 48c4ba77fed8089a608ecaf9ec8b7789a3e73c27
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-13 18:47:32 +0000
+
+    switch to POE::Filter::Block to reduce issues from Filter::Line 
+
+  Change: 9a89ec61f97b246088fb02508d1479295706bd22
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-13 16:30:19 +0000
+
+    add pogomips concept from POE =] 
+
+------------------------------------------
+version 1.010 at 2014-11-12 06:19:01 +0000
+------------------------------------------
+
+  Change: dc234fe2f82b3982d475ee45fdc3534d1bfc178d
+  Author: Apocalypse <APOCAL@cpan.org>
+  Date : 2014-11-11 22:19:01 +0000
+
+    New CPAN release of POE-Component-SSLify - v1.010
+
+    - add informational test that prints out ssleay version
+
+    - clamp the writes to 16K internally to get around write errors
+    reported
+
+    by RT#95071 and RT#58243, thanks!
+
+    [STATISTICS]
+
+    - code churn: 7 files changed, 591 insertions(+), 5 deletions(-) 
 
   Change: f8043053bd401402979e7161d2fcc31f8184cb3b
   Author: Apocalypse <APOCAL@cpan.org>
@@ -128,5 +173,5 @@ version 1.009 at 2014-11-12 00:45:19 +0000
     mailmap 
 
 ================================================
-Plus 9 releases after 2013-11-12 00:00:00 +0000.
+Plus 9 releases after 2013-11-14 00:00:00 +0000.
 ================================================
